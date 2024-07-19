@@ -1,85 +1,74 @@
-// TotalPurchaseChart.js
-import React, { useEffect, useState } from 'react';
+// src/PurchaseChart.js
+import React, { useState, useEffect } from 'react';
+import { Line } from 'react-chartjs-2';
 import axios from 'axios';
 import moment from 'moment';
-import { PieChart, Pie, Tooltip, Cell, Legend } from 'recharts';
 
-const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#FF0000', '#800080', '#808000', '#000080'];
+const PurchaseChart = () => {
+    const [filter, setFilter] = useState('days');
+    const [chartData, setChartData] = useState({});
 
-const TotalPurchaseChart = () => {
-  const [filter, setFilter] = useState('days');
-  const [data, setData] = useState([]);
+    const fetchData = async () => {
+        try {
+            const response = await axios.get(`http://localhost:3030/cust_purch/totalPurchaseAmount?filter=${filter}`);
+            const data = response.data;
 
-  useEffect(() => {
-    fetchData();
-  }, [filter]);
+            if (!data || data.length === 0) {
+                setChartData({});
+                return;
+            }
 
-  const fetchData = async () => {
+            let labels = [];
+            let amounts = [];
 
-    try {
-      const response = await axios.get(`http://localhost:3030/cust_Purch/totalPurchaseAmount`, { params: { filter } });
-      const chartData = response.data.map(item => {
-        if (filter === 'days') {
-          return {
-            name: moment(item.date).format('DD MMM'),
-            value: item.total_amount,
-          };
-        } else if (filter === 'months') {
-          return {
-            name: moment(item.month, 'M').format('MMMM'),
-            value: item.total_amount,
-          };
-        } else if (filter === 'years') {
-          return {
-            name: item.year,
-            value: item.total_amount,
-          };
+            if (filter === 'days') {
+                labels = data.map(item => moment(item.date).format('YYYY-MM-DD'));
+                amounts = data.map(item => item.total_amount);
+            } else if (filter === 'months') {
+                labels = data.map(item => `Month ${item.month}`);
+                amounts = data.map(item => item.total_amount);
+            } else if (filter === 'years' || filter === 'allYears') {
+                labels = data.map(item => `Year ${item.year}`);
+                amounts = data.map(item => item.total_amount);
+            }
+
+            setChartData({
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Total Purchase Amount',
+                        data: amounts,
+                        backgroundColor: 'rgba(75,192,192,0.4)',
+                        borderColor: 'rgba(75,192,192,1)',
+                        borderWidth: 1,
+                    },
+                ],
+            });
+        } catch (error) {
+            console.error('Error fetching data:', error);
+            setChartData({});
         }
-        return item;
-      });
-      setData(chartData);
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    }
-  };
+    };
 
-  const handleFilterChange = (event) => {
-    setFilter(event.target.value);
-  };
+    useEffect(() => {
+        fetchData();
+    }, [filter]);
 
-  return (
-    <div>
-      <h2>Total Purchase Amount ({filter})</h2>
-      <div style={{ marginBottom: '20px' }}>
-        <label htmlFor="filterSelect">Select Filter:</label>
-        <select id="filterSelect" value={filter} onChange={handleFilterChange}>
-          <option value="days">Days</option>
-          <option value="months">Months</option>
-          <option value="years">Years</option>
-        </select>
-      </div>
-      <PieChart width={400} height={400}>
-
-        <Pie
-          dataKey="value"
-          isAnimationActive={true}
-          data={data}
-          cx="50%"
-          cy="50%"
-          outerRadius={150}
-          fill="#8884d8"
-          label
-        >
-
-          {data.map((entry, index) => (
-            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-          ))}
-        </Pie>
-        <Tooltip />
-        <Legend />
-      </PieChart>
-    </div>
-  );
+    return (
+        <div>
+            <div>
+                <button onClick={() => setFilter('days')}>Days</button>
+                <button onClick={() => setFilter('months')}>Months</button>
+                <button onClick={() => setFilter('years')}>Years</button>
+                <button onClick={() => setFilter('allYears')}>All Years</button>
+            </div>
+            {chartData && chartData.labels ? (
+                <Line data={chartData} />
+            ) : (
+                <p>No data available for the selected filter.</p>
+            )}
+        </div>
+    );
 };
 
-export default TotalPurchaseChart;
+export default PurchaseChart;

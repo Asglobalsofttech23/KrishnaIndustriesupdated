@@ -1,59 +1,86 @@
-// src/components/SalesPieChart.js
-import React, { useEffect, useState } from 'react';
-import { Pie } from 'react-chartjs-2';
-import { Chart, ArcElement, Tooltip, Legend } from 'chart.js';
+// src/components/SalesChart.js
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { Line } from 'react-chartjs-2';
+import moment from 'moment';
 
-// Register the required elements and plugins
-Chart.register(ArcElement, Tooltip, Legend);
-
-const SalesPieChart = () => {
-  const [salesData, setSalesData] = useState(null);
-  const [filterType, setFilterType] = useState('day'); // default filter
+const SalesChart = () => {
+  const [filterType, setFilterType] = useState('day');
+  const [chartData, setChartData] = useState({});
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(`http://localhost:3030/sales/totalSalesAmount`, {
-          params: { filterType }
-        });
-        setSalesData(response.data.totalPurchaseAmount);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-
-    fetchData();
+    fetchSalesData();
   }, [filterType]);
 
-  const data = {
-    labels: ['Total Sales'],
-    datasets: [
-      {
-        label: 'Sales',
-        data: [salesData],
-        backgroundColor: ['rgba(75, 192, 192, 0.6)'],
-        borderColor: ['rgba(75, 192, 192, 1)'],
-        borderWidth: 1,
-      },
-    ],
+  const fetchSalesData = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.get(`http://localhost:3030/sales/totalSalesAmount`, {
+        params: { filterType },
+      });
+      const data = response.data;
+      formatChartData(data);
+    } catch (error) {
+      console.error('Error fetching sales data:', error);
+    }
+    setLoading(false);
+  };
+
+  const formatChartData = (data) => {
+    let labels = [];
+    let values = [];
+
+    if (filterType === 'day') {
+      labels = data.map(item => moment(item.date).format('DD MMM YYYY'));
+      values = data.map(item => item.totalPurchaseAmount);
+    } else if (filterType === 'month') {
+      labels = data.map(item => moment(item.month, 'MM').format('MMMM'));
+      values = data.map(item => item.totalPurchaseAmount);
+    } else if (filterType === 'year') {
+      labels = data.map(item => item.year);
+      values = data.map(item => item.totalPurchaseAmount);
+    } else if (filterType === 'allYears') {
+      labels = ['All Years'];
+      values = [data[0].totalPurchaseAmount];
+    }
+
+    setChartData({
+      labels,
+      datasets: [
+        {
+          label: 'Total Sales Amount',
+          data: values,
+          borderColor: 'rgba(75, 192, 192, 1)',
+          backgroundColor: 'rgba(75, 192, 192, 0.2)',
+          fill: true,
+        },
+      ],
+    });
   };
 
   return (
     <div>
-      <h2>Sales Data</h2>
       <div>
-        <button onClick={() => setFilterType('day')}>Day</button>
-        <button onClick={() => setFilterType('month')}>Month</button>
-        <button onClick={() => setFilterType('year')}>Year</button>
+        <label htmlFor="filter">Filter by: </label>
+        <select
+          id="filter"
+          value={filterType}
+          onChange={(e) => setFilterType(e.target.value)}
+        >
+          <option value="day">Day</option>
+          <option value="month">Month</option>
+          <option value="year">Year</option>
+          <option value="allYears">All Years</option>
+        </select>
       </div>
-      {salesData !== null ? (
-        <Pie data={data} />
-      ) : (
+      {loading ? (
         <p>Loading...</p>
+      ) : (
+        <Line data={chartData} />
       )}
     </div>
   );
 };
 
-export default SalesPieChart;
+export default SalesChart;
