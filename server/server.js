@@ -21,7 +21,9 @@ const transporter = nodeMailer.createTransport({
       user: "7485c5001@smtp-brevo.com", 
       pass: "98vCAkyzMLfgWYFq" 
   }
-});
+}); 
+
+
 
 
 const storage = multer.diskStorage({
@@ -33,14 +35,27 @@ const storage = multer.diskStorage({
     cb(null, file.fieldname + '-' + uniqueSuffix);
   }
 });
+const storageExcel = multer.diskStorage({
+  destination: (req, file, cb) => {
+      cb(null, 'uploads/');
+  },
+  filename: (req, file, cb) => {
+      const uniqueSuffix = Date.now() + '_' + Math.round(Math.random() * 1E9);
+      const extension = path.extname(file.originalname);
+      cb(null, file.fieldname + '_' + uniqueSuffix + extension);
+  }
+});
+
+const upload = multer({ storage: storage });
+const uploadExcel = multer({storage: storageExcel});
 
 
 const db = mysql.createPool({
-  host : 'localhost',
+  host : '193.203.184.74',
   port : '3306',
-  user : 'root',
-  password : '0210',
-  database : 'u534462265_crm'
+  user : 'u534462265_Krishna',
+  password : 'ASGlobal@12345',
+  database : 'u534462265_krishna_crm'
 })
 
 db.getConnection((err, connection) => {
@@ -88,6 +103,9 @@ app.use('/cust_purch',customerPurchaseController);
 
 const empAttendanceController = require('./controllers/empAttendanceController')(db);
 app.use('/emp_attend',empAttendanceController);
+
+const uploadExcelController = require('./controllers/uploadExcelController')(db,uploadExcel);
+app.use('/upload',uploadExcelController);
 
 app.listen(port,()=>{
   console.log(`Server is running ....${port}`)

@@ -47,6 +47,7 @@ const LeadsIndex = () => {
   const [todayLeadsData, setTodayLeadsData] = useState(false);
   const [followData, setFollowData] = useState();
   const [custData,setCustData] = useState([]);
+  const [buttonDisabled, setButtonDisabled] = useState(false);
 
   useEffect(() => {
     if (todayLeadsData || filterLeadsData) {
@@ -114,10 +115,6 @@ const LeadsIndex = () => {
     })
   },[])
 
-  
-
-  
-
   const handleFilterChange = (startTime, endTime) => {
     setStartTime(startTime);
     setEndTime(endTime);
@@ -143,14 +140,17 @@ const LeadsIndex = () => {
     }
   };
 
-  
+  const handleTodayLeadsClick = () => {
+    setTodayLeadsData(true);
+    setButtonDisabled(true);
+    setTimeout(() => {
+      setButtonDisabled(false);
+    }, 300000); // 5 minutes in milliseconds
+  };
 
   const firstIndexOfData = (currentPage - 1) * dataPerPage;
-const lastIndexOfData = currentPage * dataPerPage;
-const currentData = unFollowedLeads.slice(firstIndexOfData, lastIndexOfData);
-
-
-  
+  const lastIndexOfData = currentPage * dataPerPage;
+  const currentData = unFollowedLeads.slice(firstIndexOfData, lastIndexOfData);
 
   return (
     <div>
@@ -174,7 +174,7 @@ const currentData = unFollowedLeads.slice(firstIndexOfData, lastIndexOfData);
 
       <Grid container spacing={2}>
         <Grid item xs={4} display="flex" justifyContent="center">
-        <Search data={leadsData} setData={setSearchedFilter}  />
+          <Search data={leadsData} setData={setSearchedFilter} />
         </Grid>
         <Grid item xs={4} display="flex" justifyContent="center">
           {filterLeadsData ? (
@@ -195,9 +195,10 @@ const currentData = unFollowedLeads.slice(firstIndexOfData, lastIndexOfData);
                 Apply Filter
               </Button>
               <Button
-                onClick={() => setTodayLeadsData(true)}
+                onClick={handleTodayLeadsClick}
                 style={{ marginLeft: "30px" }}
                 variant="contained"
+                disabled={buttonDisabled}
               >
                 Today Leads
               </Button>
@@ -218,18 +219,16 @@ const currentData = unFollowedLeads.slice(firstIndexOfData, lastIndexOfData);
       <TableContainer component={Paper} className="mt-3">
         <Table>
           <TableHead>
-            <TableRow style={{ fontWeight: "bold", backgroundColor: "#FFF9C4" }}>
-              <TableCell style={{ fontWeight: "bold" ,backgroundcolor:"red"}}>S.No</TableCell>
-              <TableCell style={{ fontWeight: "bold" }}>Name</TableCell>
-              <TableCell style={{ fontWeight: "bold" }}>
-                Mobile Number
-              </TableCell>
-              <TableCell style={{ fontWeight: "bold" }}>Email</TableCell>
-              <TableCell style={{ fontWeight: "bold" }}>Company</TableCell>
-              <TableCell style={{ fontWeight: "bold" }}>Address</TableCell>
-              <TableCell style={{ fontWeight: "bold" }}>City</TableCell>
-              <TableCell style={{ fontWeight: "bold" }}>State</TableCell>
-              <TableCell style={{ fontWeight: "bold" }}>Product Name</TableCell>
+            <TableRow>
+              <TableCell style={{ fontWeight: "bold", backgroundColor: "#FFF9C4" }}>S.No</TableCell>
+              <TableCell style={{ fontWeight: "bold", backgroundColor: "#FFF9C4" }}>Name</TableCell>
+              <TableCell style={{ fontWeight: "bold", backgroundColor: "#FFF9C4" }}>Mobile Number</TableCell>
+              <TableCell style={{ fontWeight: "bold", backgroundColor: "#FFF9C4" }}>Email</TableCell>
+              <TableCell style={{ fontWeight: "bold", backgroundColor: "#FFF9C4" }}>Company</TableCell>
+              <TableCell style={{ fontWeight: "bold", backgroundColor: "#FFF9C4" }}>Address</TableCell>
+              <TableCell style={{ fontWeight: "bold", backgroundColor: "#FFF9C4" }}>City</TableCell>
+              <TableCell style={{ fontWeight: "bold", backgroundColor: "#FFF9C4" }}>State</TableCell>
+              <TableCell style={{ fontWeight: "bold", backgroundColor: "#FFF9C4" }}>Product Name</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -244,7 +243,6 @@ const currentData = unFollowedLeads.slice(firstIndexOfData, lastIndexOfData);
                 <TableCell>{leads.SENDER_CITY}</TableCell>
                 <TableCell>{leads.SENDER_STATE}</TableCell>
                 <TableCell>{leads.QUERY_PRODUCT_NAME}</TableCell>
-                
               </TableRow>
             ))}
           </TableBody>
@@ -252,15 +250,15 @@ const currentData = unFollowedLeads.slice(firstIndexOfData, lastIndexOfData);
       </TableContainer>
 
       <Grid container spacing={2} display='flex' justifyContent='center' className="mt-4">
-      <Stack spacing={2}>
-      <Pagination
-    count={Math.ceil(unFollowedLeads.length / dataPerPage)}
-    page={currentPage}
-    onChange={(e, value) => setCurrentPage(value)}
-    size="small"
-    style={{ cursor: 'pointer', '&:hover': { backgroundColor: 'transparent' } }}
-  />
-    </Stack>
+        <Stack spacing={2}>
+          <Pagination
+            count={Math.ceil(unFollowedLeads.length / dataPerPage)}
+            page={currentPage}
+            onChange={(e, value) => setCurrentPage(value)}
+            size="small"
+            style={{ cursor: 'pointer', '&:hover': { backgroundColor: 'transparent' } }}
+          />
+        </Stack>
       </Grid>
 
       <Dialog open={openError} onClose={() => setOpenError(false)}>
@@ -272,8 +270,6 @@ const currentData = unFollowedLeads.slice(firstIndexOfData, lastIndexOfData);
           <Button onClick={() => setOpenError(false)}>Close</Button>
         </DialogActions>
       </Dialog>
-
-      
     </div>
   );
 };

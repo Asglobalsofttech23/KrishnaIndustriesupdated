@@ -3,6 +3,8 @@ import { lazy } from 'react';
 // project imports
 import MainLayout from 'layout/MainLayout';
 import Loadable from 'ui-component/Loadable';
+import { element } from 'prop-types';
+// import UploadExcel from 'components/Admin Panel/Purchase/UploadExell';
 
 const Login = Loadable(lazy(() => import('views/pages/authentication3/Login')));
 
@@ -18,7 +20,7 @@ const SpecificationIndex = Loadable(lazy(() => import('components/Admin Panel/Pr
 const SalesIndex = Loadable(lazy(() => import('components/Admin Panel/Sales/SalesIndex')));
 const AdminCustomerIndex = Loadable(lazy(() => import('components/Admin Panel/Customer/AdminCustomerIndex')));
 const AdminCustPurchIndex = Loadable(lazy(() => import('components/Admin Panel/Admin Customer Purchase/AdminCustPurchIndex')));
-
+const UploadExcel = Loadable(lazy(() => import('components/Admin Panel/Purchase/UploadExell')));
 
 // Employee
 const EmpLeadsIndex = Loadable(lazy(() => import('components/Employee Panel/Employee Leads/EmpLeadsIndex')));
@@ -106,6 +108,10 @@ const MainRoutes = sessionStorage.getItem("adminLoggedIn") ? {
           element: <UtilsShadow />
         }
       ]
+    },
+    {
+      path:'uploadExcell',
+      element:<UploadExcel/>
     },
     {
       path: 'sample-page',
