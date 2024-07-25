@@ -52,7 +52,7 @@ const EmpFlwLeadsFilter = ({ getData, filter }) => {
 
     return (
         <Grid container spacing={2} className='mt-3'>
-            <Grid item xs={6}>
+            {/* <Grid item xs={6}>
                 <TextField
                     fullWidth
                     label="Start Date"
@@ -73,7 +73,7 @@ const EmpFlwLeadsFilter = ({ getData, filter }) => {
                     value={filterData.endDate}
                     InputLabelProps={{ shrink: true }}
                 />
-            </Grid>
+            </Grid> */}
             <Grid item xs={6}>
                 <TextField
                     fullWidth

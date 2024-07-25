@@ -49,61 +49,68 @@ const AddEmployee = ({onClose}) => {
   const handleValidation = (name, value) => {
     let errMsg = "";
     const trimmedValue = value && typeof value === "string" ? value.trim() : value;
-    switch(name){
+    switch (name) {
       case 'emp_name':
-        if(!trimmedValue){
-          errMsg  = "Employee Name is Required"
+        if (!trimmedValue) {
+          errMsg = "Employee Name is Required";
+        } else if (!/^[a-zA-Z\s]+$/.test(trimmedValue)) {
+          errMsg = "Employee Name must contain only letters and spaces";
         }
         break;
       case 'emp_email':
-        if(!trimmedValue){
-          errMsg  = "Employee Email is Required"
+        if (!trimmedValue) {
+          errMsg = "Employee Email is Required";
+        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedValue)) {
+          errMsg = "Invalid email format";
         }
         break;
       case 'emp_mobile':
-        if(!trimmedValue){
-          errMsg  = "Employee Mobile is Required"
+        if (!trimmedValue) {
+          errMsg = "Employee Mobile is Required";
+        } else if (!/^\d{10}$/.test(trimmedValue)) {
+          errMsg = "Phone number must be 10 digits";
         }
         break;
       case 'dept_id':
-        if(!trimmedValue){
-          errMsg  = "Department is Required"
+        if (!trimmedValue) {
+          errMsg = "Department is Required";
         }
         break;
       case 'role_id':
-        if(!trimmedValue){
-          errMsg  = "Role is Required"
+        if (!trimmedValue) {
+          errMsg = "Role is Required";
         }
         break;
       case 'lang_id':
-        if(!trimmedValue){
-          errMsg  = "Language is Required"
+        if (!trimmedValue) {
+          errMsg = "Language is Required";
         }
         break;
       case 'state':
-        if(!trimmedValue){
-          errMsg  = "State is Required"
+        if (!trimmedValue) {
+          errMsg = "State is Required";
         }
         break;
       case 'dist':
-        if(!trimmedValue){
-          errMsg  = "District is Required"
+        if (!trimmedValue) {
+          errMsg = "District is Required";
         }
         break;
       case 'city':
-        if(!trimmedValue){
-          errMsg  = "City is Required"
+        if (!trimmedValue) {
+          errMsg = "City is Required";
         }
         break;
       case 'hire_date':
-        if(!trimmedValue){
-          errMsg  = "Hire Date is Required"
+        if (!trimmedValue) {
+          errMsg = "Hire Date is Required";
         }
+        break;
+      default:
         break;
     }
     return errMsg;
-  }
-
+  };
   
 
   const handleChangeInput = (e) => {

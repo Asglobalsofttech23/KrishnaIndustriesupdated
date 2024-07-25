@@ -31,17 +31,23 @@ const AdminUpdateCustomer = ({ data, onClose }) => {
             case 'cust_name':
                 if (!trimmedValue) {
                     errmsg = 'Customer name is required.';
-                }
+                } else if (!/^[a-zA-Z\s]+$/.test(trimmedValue)) {
+                    errmsg = "Employee Name must contain only letters and spaces";
+                  }
                 break;
             case 'cust_mobile':
                 if (!trimmedValue) {
                     errmsg = 'Customer mobile is required.';
-                }
+                }else if (!/^\d{10}$/.test(trimmedValue)) {
+                    errmsg = "Phone number must be 10 digits";
+                  }
                 break;
             case 'cust_email':
                 if (!trimmedValue) {
                     errmsg = 'Customer Email is required.';
-                }
+                }else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedValue)) {
+                    errmsg = "Invalid email format";
+                  }
                 break;
             case 'cust_company':
                 if (!trimmedValue) {

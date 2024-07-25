@@ -25,7 +25,7 @@ const admin_cust = {
       breadcrumbs: false
     },
     {
-      id: 'admin-customer',
+      id: 'admin-customerpur',
       title: 'Customer Purchase',
       type: 'item',
       url: '/custPurchIndex',

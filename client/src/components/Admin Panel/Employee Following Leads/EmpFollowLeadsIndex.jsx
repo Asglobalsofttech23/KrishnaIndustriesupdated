@@ -155,7 +155,7 @@ const handleFilterClear = () => {
       <Grid container spacing={3}>
         {tabValue == 3 ? (
           <>
-            <Grid item xs={6}>
+            {/* <Grid item xs={6}>
               <TextField
                 fullWidth
                 label="Start Date"
@@ -174,7 +174,7 @@ const handleFilterClear = () => {
                 InputLabelProps={{ shrink: true }}
                 onChange={(e) => setEndDate(e.target.value)}
               />
-            </Grid>
+            </Grid> */}
             <Grid item xs={6}>
                 <TextField
                     fullWidth
@@ -288,7 +288,7 @@ const handleFilterClear = () => {
               <TableCell style={{ fontWeight: "bold" }}>
                 Reminder Date
               </TableCell>
-              <TableCell style={{ fontWeight: "bold" }}>Action</TableCell>
+              {/* <TableCell style={{ fontWeight: "bold" }}>Action</TableCell> */}
             </TableRow>
           </TableHead>
           <TableBody>
@@ -310,9 +310,9 @@ const handleFilterClear = () => {
                   {moment(leads.reminder_date).format("YYYY-MM-DD")}
                 </TableCell>
 
-                <TableCell>
+                {/* <TableCell>
                   <Button>Edit</Button>
-                </TableCell>
+                </TableCell> */}
               </TableRow>
             ))}
           </TableBody>

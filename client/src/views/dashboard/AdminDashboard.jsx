@@ -10,15 +10,14 @@ import CustomerCard from './CustomerCard';
 import TodayFlwLeadsCount from './TodayFlwLeadsCount';
 import TodayRememberLeadsCount from './TodayRememberLeadsCount';
 import ProductSalesChart from './ProductSalesChart';
-import TotalProfit from './chart-data/TotalProfitChart';
-import TotalPurchaseAmount from './chart-data/TotalPurchase';
-import TotalSalesPieChart from './chart-data/TotalSales';
-import TodayAttendance from './EmpAttandanceCount';
+import TotalProfitChart from './ProfitChart';
 
 import { gridSpacing } from 'store/constant';
 
+
 // assets
 import StorefrontTwoToneIcon from '@mui/icons-material/StorefrontTwoTone';
+
 
 // ==============================|| DEFAULT DASHBOARD ||============================== //
 
@@ -63,18 +62,15 @@ const AdminDashboard = () => {
           <Grid item xs={8}>
           <Grid container spacing={gridSpacing}>
             <Grid item xs={12}>
-            {/* <ProductSalesChart isLoading={isLoading} /> */}
-            <TotalSalesPieChart/>
+            <ProductSalesChart isLoading={isLoading} />
             </Grid>
             <Grid item xs={12}>
-            {/* <ProductSalesChart isLoading={isLoading} /> */}
-            <TotalPurchaseAmount/>
+            <TotalProfitChart isLoading={isLoading} />
             </Grid>
           </Grid>
           </Grid>
           <Grid item xs={4}>
-          {/* <CustomertAmountDetailsCard isLoading={isLoading} /> */}
-          <TotalProfit/>
+          <CustomertAmountDetailsCard isLoading={isLoading} />
           </Grid>
         </Grid>
       </Grid>

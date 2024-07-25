@@ -4,6 +4,8 @@ import { lazy } from 'react';
 import MainLayout from 'layout/MainLayout';
 import Loadable from 'ui-component/Loadable';
 import { element } from 'prop-types';
+import AllLeads from 'components/Admin Panel/Leads/AllLeads';
+import StockManagement from 'components/Admin Panel/Stock/Stock Index';
 // import UploadExcel from 'components/Admin Panel/Purchase/UploadExell';
 
 const Login = Loadable(lazy(() => import('views/pages/authentication3/Login')));
@@ -21,6 +23,9 @@ const SalesIndex = Loadable(lazy(() => import('components/Admin Panel/Sales/Sale
 const AdminCustomerIndex = Loadable(lazy(() => import('components/Admin Panel/Customer/AdminCustomerIndex')));
 const AdminCustPurchIndex = Loadable(lazy(() => import('components/Admin Panel/Admin Customer Purchase/AdminCustPurchIndex')));
 const UploadExcel = Loadable(lazy(() => import('components/Admin Panel/Purchase/UploadExell')));
+const EmpAttendanceReport = Loadable(lazy(()=> import('components/Admin Panel/Reports/EmployeeAttendance')))
+const PurchaseReport = Loadable(lazy(()=> import('components/Admin Panel/Reports/purchaseReport')))
+const SalesReport = Loadable(lazy(()=> import('components/Admin Panel/Reports/SalesReport')))
 
 // Employee
 const EmpLeadsIndex = Loadable(lazy(() => import('components/Employee Panel/Employee Leads/EmpLeadsIndex')));
@@ -60,9 +65,17 @@ const MainRoutes = sessionStorage.getItem("adminLoggedIn") ? {
       path: 'empIndex',
       element: <EmployeeIndex />
     },
+    { 
+      path: 'empAttendancereports',
+      element: <EmpAttendanceReport />
+      },
     {
       path: 'leadsIndex',
       element: <LeadsIndex />
+    },
+    {
+      path: 'AllLeads',
+      element: <AllLeads />
     },
     {
       path: 'flwLeadsIndex',
@@ -85,9 +98,21 @@ const MainRoutes = sessionStorage.getItem("adminLoggedIn") ? {
       element: <SalesIndex />
     },
     {
+      path: 'stockIndex',
+      element: <StockManagement />
+    },
+    {
       path: 'custIndex',
       element: <AdminCustomerIndex />
     },
+    {
+      path:'purreports',
+      element:<PurchaseReport/>
+    },
+    {
+      path:'salesreports',
+      element:<SalesReport/>
+},
     {
       path: 'custPurchIndex',
       element: <AdminCustPurchIndex />

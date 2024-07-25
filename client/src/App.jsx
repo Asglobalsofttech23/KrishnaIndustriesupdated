@@ -12,6 +12,7 @@ import themes from 'themes';
 
 // project imports
 import NavigationScroll from 'layout/NavigationScroll';
+import Footer from 'components/Footer/Footer';
 
 // ==============================|| APP ||============================== //
 
@@ -26,6 +27,7 @@ const App = () => {
           <RouterProvider router={router} />
         </NavigationScroll>
       </ThemeProvider>
+      <Footer/>
     </StyledEngineProvider>
   );
 };

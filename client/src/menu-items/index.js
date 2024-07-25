@@ -11,6 +11,8 @@ import admin_cust from './admin_cust';
 import emp_leads from './emp_leads';
 import emp_cust from './emp_cust';
 import emp_dashboard from './emp_dashboard';
+import admin_Stock from './stockmanage';
+import admin_reports from './admin_report';
 
 // ==============================|| MENU ITEMS ||============================== //
 
@@ -24,7 +26,7 @@ const employeeLoggedIn = sessionStorage.getItem("employeeLoggedIn") === "true";
 // Assign menu items based on login status
 if (adminLoggedIn) {
   menuItems = {
-    items: [dashboard, admin_emp, admin_leads, admin_purch, admin_product, admin_sales, admin_cust]
+    items: [dashboard, admin_emp, admin_leads, admin_purch, admin_product, admin_sales, admin_cust,admin_Stock,admin_reports]
   };
 } else if (employeeLoggedIn) {
   menuItems = {

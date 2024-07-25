@@ -23,8 +23,11 @@ const admin_emp = {
       url: '/empIndex',
       icon: icons.IconTypography,
       breadcrumbs: false
-    }
+    },
+  
+  
   ]
-};
 
+  
+};
 export default admin_emp;

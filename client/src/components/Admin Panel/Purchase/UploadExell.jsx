@@ -1,56 +1,56 @@
-import React, { useEffect, useState } from 'react';
-import Axios from 'axios';
-import { styled } from '@mui/material/styles';
-import { Button, Dialog, DialogActions, DialogContent, FormControl, Grid, MenuItem, Select, TextField } from '@mui/material';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import axios from 'axios';
 import config from '../../../config';
 
-function UploadExcel() {
+const UploadExcel = () => {
   const [file, setFile] = useState(null);
-  const [data, setData] = useState(null);
-  const [error, setError] = useState(null);
+  const [uploadResult, setUploadResult] = useState(null);
 
-  const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
+  // Handle file selection
+  const handleFileChange = (event) => {
+    setFile(event.target.files[0]);
   };
 
-  const handleUpload = async (e) => {
-    e.preventDefault();
+  // Handle file upload
+  const handleFileUpload = async () => {
     if (!file) {
-      setError('Please select a file to upload');
+      alert('Please select a file first.');
       return;
     }
-    setError(null);
+
     const formData = new FormData();
     formData.append('file', file);
 
     try {
-      const response = await Axios.post(`${config.apiURL}/upload/upload`, formData, {
+      const response = await axios.post(`${config.apiUrl}/purchase/savePurchaseexcel`, formData, {
         headers: {
-          'Content-Type': 'multipart/form-data'
-        }
+          'Content-Type': 'multipart/form-data',
+        },
       });
-      setData(response.data);
-    } catch (err) {
-      setError('Error uploading file');
-      console.error(err);
+      console.log('File uploaded successfully:', response.data);
+      setUploadResult(response.data);
+    } catch (error) {
+      console.error('Error uploading file:', error);
+      if (error.response) {
+        console.log('Response data:', error.response.data);
+        console.log('Response status:', error.response.status);
+        console.log('Response headers:', error.response.headers);
+      }
     }
   };
 
   return (
     <div>
-      <Grid container spacing={3} className="p-4">
-        <div className="upload-wrapper">
-          <h3>Upload & View Excel Sheets</h3>
-          <form onSubmit={handleUpload}>
-            <input type="file" onChange={handleFileChange} />
-            <button type="submit">Upload</button>
-          </form>
-          {error && <div className="error">{error}</div>}
+      <input type="file" onChange={handleFileChange} />
+      <button onClick={handleFileUpload}>Upload File</button>
+      {uploadResult && (
+        <div>
+          <h3>Upload Result:</h3>
+          <pre>{JSON.stringify(uploadResult, null, 2)}</pre>
         </div>
-      </Grid>
+      )}
     </div>
   );
-}
+};
 
 export default UploadExcel;

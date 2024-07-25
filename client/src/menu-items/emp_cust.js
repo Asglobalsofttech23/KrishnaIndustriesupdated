@@ -25,7 +25,7 @@ const emp_cust = {
       breadcrumbs: false
     },
     {
-      id: 'emp-customer',
+      id: 'emp-customerPur',
       title: 'Customer Purchase',
       type: 'item',
       url: '/custPurchIndex',

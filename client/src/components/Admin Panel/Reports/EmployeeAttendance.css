@@ -1,0 +1,63 @@
+EmployeeAttendance.css
+
+/* General container styles */
+.container {
+    padding: 20px;
+    margin-bottom: 200px;
+  }
+  
+  /* Heading styles */
+  .heading {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  /* Card container styles */
+  .card-container {
+    display: flex;
+    justify-content: center;
+  }
+  
+  /* Calendar container styles */
+  .calendar-container {
+    margin-top: 20px;
+  }
+  
+  /* Styles for calendar events */
+  .calendar-event {
+    background-color: #FFFF8D; /* Primary color */
+    color: black;
+   font-weight: bolder;
+    border-radius: 5px;
+    padding: 5px 10px;
+    transition: transform 0.2s ease; /* Smooth transition for zoom effect */
+  }
+  
+  /* Zoom in effect on hover */
+  .calendar-event:hover {
+    transform: scale(1.1); /* Zoom in */
+  }
+  
+  /* Styles for the filter container */
+  .filter-container {
+    margin-top: 20px;
+  }
+  
+  /* Button styles */
+  button {
+    margin-top: 15px;
+  }
+  
+  /* Card styles */
+  .MuiCard-root {
+    margin: 10px;
+  }
+  
+  /* Typography styles */
+  .MuiTypography-h2 {
+    color: #3f51b5; /* Primary color for Today's Attendance */
+  }
+  
+  .MuiTypography-h4 {
+    margin-bottom: 10px;
+  }

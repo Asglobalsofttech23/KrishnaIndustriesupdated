@@ -15,7 +15,6 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  TextField,
 } from "@mui/material";
 import axios from "axios";
 import moment from "moment";
@@ -26,15 +25,23 @@ import Search from "../../Search Option/Search";
 import AdminLeadsFilterForm from "./AdminLeadsFilterForm";
 import config from '../../../config'
 
+const formatDate = (dateStr) => {
+  const date = new Date(dateStr);
+  const day = date.getDate().toString().padStart(2, '0');
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const year = date.getFullYear();
+  const hours = date.getHours().toString().padStart(2, '0');
+  const minutes = date.getMinutes().toString().padStart(2, '0');
+  return `${day}/${month}/${year} ${hours}:${minutes}`;
+};
+
 const LeadsIndex = () => {
   const yesterday = moment().subtract(1, "days").format("YYYY-MM-DD");
   const today = moment().format("YYYY-MM-DD");
-  console.log(`${yesterday},${today}`);
   const [leadsData, setLeadsData] = useState([]);
   const [openError, setOpenError] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
-  const [followingLeadsData, setFollwingLeadsData] = useState([]);
-  const [searchedfilter, setSearchedFilter] = useState([]);
+  const [searchedFilter, setSearchedFilter] = useState([]);
   const [dataPerPage, setDataPerPage] = useState(5);
   const [currentPage, setCurrentPage] = useState(1);
   const [startTime, setStartTime] = useState(
@@ -45,94 +52,89 @@ const LeadsIndex = () => {
   );
   const [filterLeadsData, setFilterLeadsData] = useState(false);
   const [todayLeadsData, setTodayLeadsData] = useState(false);
-  const [followData, setFollowData] = useState();
-  const [custData,setCustData] = useState([]);
-  const [buttonDisabled, setButtonDisabled] = useState(false);
 
   useEffect(() => {
-    if (todayLeadsData || filterLeadsData) {
-      axios
-        .get(
-          `${config.apiUrl}/leads/leadsData/?startTime=${startTime}&endTime=${endTime}`
-        )
-        .then((res) => {
-          if (res.data.data.RESPONSE.length > 0) {
-            console.log(res.data.data.RESPONSE);
-            if (filterLeadsData) {
-              setLeadsData(res.data.data.RESPONSE);
-              setSearchedFilter(res.data.data.RESPONSE)
-            } else {
-              sessionStorage.setItem(
-                "leadsData",
-                JSON.stringify(res.data.data.RESPONSE)
-              );
-              setLeadsData(res.data.data.RESPONSE);
-              setSearchedFilter(res.data.data.RESPONSE)
-            }
-          } else {
-          }
-        })
-        .catch((err) => {
-          setOpenError(true);
-          setErrorMsg(
-            err.response?.data?.message ||
-              "An error occurred while fetching leads data"
-          );
-          console.error("Error:", err);
-        });
+    if (todayLeadsData) {
+      fetchLeadsData(startTime, endTime);
     }
   }, [startTime, endTime, todayLeadsData]);
 
   useEffect(() => {
-    if (filterLeadsData) {
-    } else {
+    if (!filterLeadsData) {
       const storedData = sessionStorage.getItem("leadsData");
       if (storedData) {
         setLeadsData(JSON.parse(storedData));
-        setSearchedFilter(JSON.parse(storedData))
+        setSearchedFilter(JSON.parse(storedData));
       }
     }
-  }, [filterLeadsData, openError, followingLeadsData, todayLeadsData]);
+  }, [filterLeadsData]);
 
   useEffect(() => {
     axios
       .get(`${config.apiUrl}/leads/getFollowingLeadsMobile`)
       .then((res) => {
-        setFollwingLeadsData(res.data);
+        // Assuming you may still need this data for other purposes
       })
       .catch((err) => {
-        console.log("Error Following Data Can't fetched.");
+        console.log("Error Following Data Can't be fetched.");
       });
   }, []);
 
-  useEffect(()=>{
+  useEffect(() => {
     axios.get(`${config.apiUrl}/customer/getCustomer`)
-    .then((res)=>{
-      setCustData(res.data)
-    })
-    .catch((err)=>{
-      console.log("Error Customer Data Can't fetched.")
-    })
-  },[])
+      .then((res) => {
+        // Assuming you may still need this data for other purposes
+      })
+      .catch((err) => {
+        console.log("Error Customer Data Can't be fetched.");
+      });
+  }, []);
 
-  const handleFilterChange = (startTime, endTime) => {
-    setStartTime(startTime);
-    setEndTime(endTime);
+  const fetchLeadsData = (startTime, endTime) => {
+    axios
+      .get(`${config.apiUrl}/leads/leadsData/?startTime=${startTime}&endTime=${endTime}`)
+      .then((res) => {
+        if (res.data.data.RESPONSE.length > 0) {
+          sessionStorage.setItem("leadsData", JSON.stringify(res.data.data.RESPONSE));
+          setLeadsData(res.data.data.RESPONSE);
+          setSearchedFilter(res.data.data.RESPONSE);
+        }
+      })
+      .catch((err) => {
+        setOpenError(true);
+        setErrorMsg(
+          err.response?.data?.message || "An error occurred while fetching leads data"
+        );
+        console.error("Error:", err);
+      });
   };
 
-  const unFollowedLeads = searchedfilter.filter((lead) => {
-    return (
-      !followingLeadsData.some(
-        (followingLead) => followingLead.leads_mobile === lead.SENDER_MOBILE
-      ) &&
-      !custData.some((cust) => cust.cust_mobile === lead.SENDER_MOBILE)
-    );
-  });
+  const handleFilterChange = (selectedState, selectedCity, startDate, endDate) => {
+    let filteredData = leadsData;
+    if (selectedState) {
+      filteredData = filteredData.filter(lead => lead.SENDER_STATE === selectedState);
+    }
+    if (selectedCity) {
+      filteredData = filteredData.filter(lead => lead.SENDER_CITY === selectedCity);
+    }
+    if (startDate && endDate) {
+      filteredData = filteredData.filter(lead => {
+        const leadDate = moment(lead.CREATED_DATE);
+        return leadDate.isBetween(startDate, endDate);
+      });
+    }
+    setSearchedFilter(filteredData);
+  };
+
+  const handleCancelFilter = () => {
+    setFilterLeadsData(false);
+    setSearchedFilter(leadsData);
+  };
 
   const handleChangeDataPerPage = (e) => {
     const newDataPerPage = parseInt(e.target.value, 10);
-    if (newDataPerPage == 1) {
-      setDataPerPage(unFollowedLeads.length);
+    if (newDataPerPage === 1) {
+      setDataPerPage(leadsData.length);
       setCurrentPage(1);
     } else {
       setDataPerPage(newDataPerPage);
@@ -140,17 +142,9 @@ const LeadsIndex = () => {
     }
   };
 
-  const handleTodayLeadsClick = () => {
-    setTodayLeadsData(true);
-    setButtonDisabled(true);
-    setTimeout(() => {
-      setButtonDisabled(false);
-    }, 300000); // 5 minutes in milliseconds
-  };
-
   const firstIndexOfData = (currentPage - 1) * dataPerPage;
   const lastIndexOfData = currentPage * dataPerPage;
-  const currentData = unFollowedLeads.slice(firstIndexOfData, lastIndexOfData);
+  const currentData = searchedFilter.slice(firstIndexOfData, lastIndexOfData);
 
   return (
     <div>
@@ -168,9 +162,7 @@ const LeadsIndex = () => {
 
       {filterLeadsData ? (
         <AdminLeadsFilterForm onFilterChange={handleFilterChange} />
-      ) : (
-        <></>
-      )}
+      ) : null}
 
       <Grid container spacing={2}>
         <Grid item xs={4} display="flex" justifyContent="center">
@@ -179,10 +171,9 @@ const LeadsIndex = () => {
         <Grid item xs={4} display="flex" justifyContent="center">
           {filterLeadsData ? (
             <Button
-              onClick={() => setFilterLeadsData(false)}
+              onClick={handleCancelFilter}
               variant="contained"
             >
-              {" "}
               Cancel Filter
             </Button>
           ) : (
@@ -191,14 +182,12 @@ const LeadsIndex = () => {
                 onClick={() => setFilterLeadsData(true)}
                 variant="contained"
               >
-                {" "}
                 Apply Filter
               </Button>
               <Button
-                onClick={handleTodayLeadsClick}
+                onClick={() => setTodayLeadsData(true)}
                 style={{ marginLeft: "30px" }}
                 variant="contained"
-                disabled={buttonDisabled}
               >
                 Today Leads
               </Button>
@@ -219,22 +208,24 @@ const LeadsIndex = () => {
       <TableContainer component={Paper} className="mt-3">
         <Table>
           <TableHead>
-            <TableRow>
-              <TableCell style={{ fontWeight: "bold", backgroundColor: "#FFF9C4" }}>S.No</TableCell>
-              <TableCell style={{ fontWeight: "bold", backgroundColor: "#FFF9C4" }}>Name</TableCell>
-              <TableCell style={{ fontWeight: "bold", backgroundColor: "#FFF9C4" }}>Mobile Number</TableCell>
-              <TableCell style={{ fontWeight: "bold", backgroundColor: "#FFF9C4" }}>Email</TableCell>
-              <TableCell style={{ fontWeight: "bold", backgroundColor: "#FFF9C4" }}>Company</TableCell>
-              <TableCell style={{ fontWeight: "bold", backgroundColor: "#FFF9C4" }}>Address</TableCell>
-              <TableCell style={{ fontWeight: "bold", backgroundColor: "#FFF9C4" }}>City</TableCell>
-              <TableCell style={{ fontWeight: "bold", backgroundColor: "#FFF9C4" }}>State</TableCell>
-              <TableCell style={{ fontWeight: "bold", backgroundColor: "#FFF9C4" }}>Product Name</TableCell>
+            <TableRow style={{ fontWeight: "bold", backgroundColor: "#FFF9C4" }}>
+              <TableCell style={{ fontWeight: "bold" }}>S.No</TableCell>
+              <TableCell style={{ fontWeight: "bold" }}>Date</TableCell>
+              <TableCell style={{ fontWeight: "bold" }}>Name</TableCell>
+              <TableCell style={{ fontWeight: "bold" }}>Mobile Number</TableCell>
+              <TableCell style={{ fontWeight: "bold" }}>Email</TableCell>
+              <TableCell style={{ fontWeight: "bold" }}>Company</TableCell>
+              <TableCell style={{ fontWeight: "bold" }}>Address</TableCell>
+              <TableCell style={{ fontWeight: "bold" }}>City</TableCell>
+              <TableCell style={{ fontWeight: "bold" }}>State</TableCell>
+              <TableCell style={{ fontWeight: "bold" }}>Product Name</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {currentData.map((leads, index) => (
               <TableRow key={leads.UNIQUE_QUERY_ID}>
                 <TableCell>{index + 1}</TableCell>
+                <TableCell>{formatDate(leads.QUERY_TIME)}</TableCell>
                 <TableCell>{leads.SENDER_NAME}</TableCell>
                 <TableCell>{leads.SENDER_MOBILE}</TableCell>
                 <TableCell>{leads.SENDER_EMAIL}</TableCell>
@@ -249,14 +240,14 @@ const LeadsIndex = () => {
         </Table>
       </TableContainer>
 
-      <Grid container spacing={2} display='flex' justifyContent='center' className="mt-4">
+      <Grid container spacing={2} display="flex" justifyContent="center" className="mt-4">
         <Stack spacing={2}>
           <Pagination
-            count={Math.ceil(unFollowedLeads.length / dataPerPage)}
+            count={Math.ceil(searchedFilter.length / dataPerPage)}
             page={currentPage}
             onChange={(e, value) => setCurrentPage(value)}
             size="small"
-            style={{ cursor: 'pointer', '&:hover': { backgroundColor: 'transparent' } }}
+            style={{ cursor: 'pointer' }}
           />
         </Stack>
       </Grid>

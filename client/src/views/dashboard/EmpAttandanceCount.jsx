@@ -1,6 +1,6 @@
-// src/components/TodayAttendance.js
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import config from '../../config';
 
 const TodayAttendance = () => {
     const [totalAttendanceCount, setTotalAttendanceCount] = useState(0);
@@ -12,7 +12,7 @@ const TodayAttendance = () => {
             try {
                 const response = await axios.get(`${config.apiUrl}/todayAttendance`);
                 const { attendance } = response.data;
-                setTotalAttendanceCount(attendance.length); // Calculate total count based on response
+                setTotalAttendanceCount(attendance ? attendance.length : 0); // Ensure attendance is an array
             } catch (err) {
                 setError(err.response ? err.response.data.message : "Error fetching data");
             } finally {

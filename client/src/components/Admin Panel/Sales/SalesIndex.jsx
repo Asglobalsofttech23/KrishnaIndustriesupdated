@@ -129,7 +129,7 @@ const SalesIndex = () => {
                 <TableCell>{sale.gst}</TableCell>
                 <TableCell>{sale.total}</TableCell>
                 <TableCell>
-                  <Button onClick={()=>handleInvoice(sale.sale_id)}>Invoice</Button>
+                  {/* <Button onClick={()=>handleInvoice(sale.sale_id)}>Invoice</Button> */}
                   <Button onClick={()=>handleEdit(sale.sale_id)}>Edit</Button>
                   <Button onClick={()=>handleDlt(sale.sale_id)}>Delete</Button>
                 </TableCell>

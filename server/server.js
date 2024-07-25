@@ -50,12 +50,19 @@ const upload = multer({ storage: storage });
 const uploadExcel = multer({storage: storageExcel});
 
 
+// const db = mysql.createPool({
+//   host : '193.203.184.74',
+//   port : '3306',
+//   user : 'u534462265_Krishna',
+//   password : 'ASGlobal@12345',
+//   database : 'u534462265_krishna_crm'
+// })
 const db = mysql.createPool({
-  host : '193.203.184.74',
+  host : 'localhost',
   port : '3306',
-  user : 'u534462265_Krishna',
-  password : 'ASGlobal@12345',
-  database : 'u534462265_krishna_crm'
+  user : 'root',
+  password : '0210',
+  database : 'u534462265_crm'
 })
 
 db.getConnection((err, connection) => {
@@ -92,6 +99,8 @@ app.use('/product',productController);
 const salesController = require('./controllers/salesController')(db);
 app.use('/sales',salesController);
 
+const stackController = require('./controllers/stackController')(db);
+app.use('/stock',stackController);
 
 const customerController = require('./controllers/customerController')(db);
 app.use('/customer',customerController);
@@ -106,6 +115,26 @@ app.use('/emp_attend',empAttendanceController);
 
 const uploadExcelController = require('./controllers/uploadExcelController')(db,uploadExcel);
 app.use('/upload',uploadExcelController);
+
+app.get('/totals', (req, res) => {
+  const salesQuery = 'SELECT SUM(total) AS total_sales FROM sales';
+  const purchaseQuery = 'SELECT SUM(total) AS total_purchases FROM purchase';
+
+  db.query(salesQuery, (err, salesResult) => {
+      if (err) throw err;
+
+      db.query(purchaseQuery, (err, purchaseResult) => {
+          if (err) throw err;
+
+          res.json({
+              total_sales: salesResult[0].total_sales,
+              total_purchases: purchaseResult[0].total_purchases
+          });
+      });
+  });
+});
+
+
 
 app.listen(port,()=>{
   console.log(`Server is running ....${port}`)

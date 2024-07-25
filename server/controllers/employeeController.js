@@ -34,6 +34,24 @@ module.exports = (db,transporter) =>{
       }
     });
   });
+  
+  router.get('/:id/state', async (req, res) => {
+    const employeeId = req.params.id;
+  
+    try {
+      const [rows] = await db.query('SELECT state FROM employees WHERE id = ?', [employeeId]);
+  
+      if (rows.length === 0) {
+        return res.status(404).json({ message: 'Employee not found' });
+      }
+  
+      res.json({ state: rows[0].state });
+    } catch (error) {
+      console.error('Error fetching employee state:', error);
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  });
+  
 
   router.post('/saveEmp', (req, res) => {
     const { dept_id, role_id, lang_id, emp_name, emp_email, emp_mobile, state, dist, city, hire_date } = req.body;
@@ -104,6 +122,134 @@ module.exports = (db,transporter) =>{
       }
     })
   })
+
+  router.get('/allAttendance', (req, res) => {
+    try {
+        const getAllAttendanceQuery = 'SELECT * FROM emp_attendance';
+        db.query(getAllAttendanceQuery, (error, results) => {
+            if (error) {
+                console.error('Error fetching data:', error);
+                res.status(500).json({ message: 'Internal server error.' });
+            } else {
+                res.status(200).json(results);
+            }
+        });
+    } catch (err) {
+        console.error('Error:', err);
+        res.status(500).json({ message: 'Internal server error.' });
+    }
+});
+router.get('/filterAttendance', (req, res) => {
+  const { month, empId } = req.query;
+
+  if (!month) {
+    return res.status(400).json({ message: "Month is required." });
+  }
+
+  const query = `
+    SELECT * FROM emp_attendance
+    WHERE MONTH(entry_at) = ? ${empId ? 'AND emp_id = ?' : ''}
+  `;
+  
+  const params = [month];
+  if (empId) params.push(empId);
+
+  db.query(query, params, (error, results) => {
+    if (error) {
+      console.error('Error fetching filtered attendance:', error);
+      return res.status(500).json({ message: 'Internal server error.' });
+    }
+
+    res.status(200).json(results);
+  });
+});
+  router.get('/todayAttendance', (req, res) => {
+    const todayDate = moment().format('YYYY-MM-DD');
+    const sql = 'SELECT COUNT(*) AS today FROM emp_attendance WHERE DATE(entry_at) = ?';
+    db.query(sql, [todayDate], (err, results) => {
+      if (err) return res.status(500).json({ message: 'Internal server error.' });
+      res.json(results[0]);
+    });
+  });
+  // Inside your employee routes file (e.g., `employeeRoutes.js`)
+router.get('/allEmployees', (req, res) => {
+  try {
+      const getAllEmployeesQuery = 'SELECT emp_id, emp_name FROM employee'; // Adjust table name and fields as necessary
+      db.query(getAllEmployeesQuery, (error, results) => {
+          if (error) {
+              console.error('Error fetching employees:', error);
+              res.status(500).json({ message: 'Internal server error.' });
+          } else {
+              res.status(200).json(results);
+          }
+      });
+  } catch (err) {
+      console.error('Error:', err);
+      res.status(500).json({ message: 'Internal server error.' });
+  }
+});
+// Example of backend endpoint to get monthly attendance
+router.get('/monthlyAttendance', (req, res) => {
+  const { month, year, empId } = req.query;
+
+  // Query to get attendance records for the specified month, year, and employee
+  const query = `
+    SELECT e.emp_id, e.emp_name, a.entry_at, a.exit_at
+    FROM emp_attendance a
+    JOIN employee e ON a.emp_id = e.emp_id
+    WHERE MONTH(a.entry_at) = ? AND YEAR(a.entry_at) = ? ${empId ? 'AND a.emp_id = ?' : ''}
+  `;
+
+  const params = [month, year];
+  if (empId) params.push(empId);
+
+  db.query(query, params, (err, results) => {
+    if (err) return res.status(500).json({ message: 'Error fetching data' });
+    res.json(results);
+  });
+});
+
+
+// Fetch all leads
+router.get('/api/leads-and-following', async (req, res) => {
+  const { date, month } = req.query;
+  let leadsQuery = 'SELECT * FROM leads_data';
+  
+  // Apply filtering based on query parameters
+  if (date) {
+    leadsQuery += ` WHERE DATE(QUERY_TIME) = '${date}'`;
+  } else if (month) {
+    const [year, monthNumber] = month.split('-');
+    leadsQuery += ` WHERE YEAR(QUERY_TIME) = ${year} AND MONTH(QUERY_TIME) = ${monthNumber}`;
+  }
+
+  try {
+    // Execute the leads query
+    const leadsResults = await new Promise((resolve, reject) => {
+      db.query(leadsQuery, (err, results) => {
+        if (err) reject(err);
+        resolve(results);
+      });
+    });
+
+    // Execute the following leads query
+    const followingLeadsResults = await new Promise((resolve, reject) => {
+      db.query('SELECT * FROM following_leads', (err, results) => {
+        if (err) reject(err);
+        resolve(results);
+      });
+    });
+
+    // Send the combined results
+    res.json({ leads: leadsResults, followingLeads: followingLeadsResults });
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching data', error });
+  }
+});
+
+
+
+  
 
   return router;
 }

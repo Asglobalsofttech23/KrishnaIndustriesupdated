@@ -25,10 +25,18 @@ const admin_leads = {
       breadcrumbs: false
     },
     {
-        id: 'admin-leads',
+        id: 'admin-flwleads',
         title: 'Following Leads Index',
         type: 'item',
         url: '/flwLeadsIndex',
+        icon: icons.IconTypography,
+        breadcrumbs: false
+      },
+      {
+        id: 'admin-Allleads',
+        title: 'All Leads',
+        type: 'item',
+        url: '/AllLeads',
         icon: icons.IconTypography,
         breadcrumbs: false
       }

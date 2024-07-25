@@ -27,6 +27,7 @@ import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import UpdateFlwLeads from "./UpdateFlwLeads";
 import ConvertCustomer from "../Customer/ConvertCustomer";
+import Followups from "./Followup";
 import config from '../../../config'
 
 const FollowingLeadsIndex = () => {
@@ -45,6 +46,8 @@ const FollowingLeadsIndex = () => {
   const [tabValue, setTablValue] = useState(1);
   const [openUpdate,setOpenUpdate] = useState(false);
   const [updateData,setUpdateData] = useState([]);
+  const [openFollow,setOpenFollow] = useState(false);
+  const [followupData,setFollowupData] = useState([]);
   const [openConvert,setOpenConvert] = useState(false);
   const [convertData,setConvertData] = useState([])
 
@@ -155,7 +158,13 @@ const currentData = filteredLeadsData
         setOpenUpdate(true)
       }
     }
-
+    const handleFollowUps = (id) =>{
+      const selectConvert = leadsData.find((leads)=>leads.follow_id === id);
+      if(selectConvert){
+        setFollowupData(selectConvert);
+        setOpenFollow(true)
+      }
+    }
     const handleConvert = (id) =>{
       const selectConvert = leadsData.find((leads)=>leads.follow_id === id);
       if(selectConvert){
@@ -300,6 +309,7 @@ const currentData = filteredLeadsData
                     <TableCell>
                         <Button onClick={()=>handleConvert(leads.follow_id)}>Convert</Button>
                         <Button onClick={()=>handleUpdate(leads.follow_id)}>Edit</Button>
+                        <Button onClick={()=>handleFollowUps(leads.follow_id)}>Follow Ups</Button>
                     </TableCell>
                 </TableRow>
             ))}
@@ -326,6 +336,14 @@ const currentData = filteredLeadsData
         </DialogContent>
         <DialogActions>
           <Button onClick={()=>setOpenUpdate(false)}>Close</Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog open={openFollow} onClose={()=>setOpenFollow(false)} maxWidth='md'>
+        <DialogContent>
+          <Followups data={followupData} onClose={()=>setOpenFollow(false)}/>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={()=>setOpenFollow(false)}>Close</Button>
         </DialogActions>
       </Dialog>
 
