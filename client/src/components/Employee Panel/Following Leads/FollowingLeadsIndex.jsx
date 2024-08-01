@@ -283,8 +283,8 @@ const currentData = filteredLeadsData
               <TableCell style={{fontWeight:'bold'}}>State</TableCell>
               <TableCell style={{fontWeight:'bold'}}>City</TableCell>
               <TableCell style={{fontWeight:'bold'}}>Product Name</TableCell>
-              <TableCell style={{fontWeight:'bold'}}>Query</TableCell>
-              <TableCell style={{fontWeight:'bold'}}>Remember</TableCell>
+              <TableCell style={{fontWeight:'bold'}}>Call Discussion</TableCell>
+              {/* <TableCell style={{fontWeight:'bold'}}>Remember</TableCell> */}
               <TableCell style={{fontWeight:'bold'}}>Reminder Date</TableCell>
               <TableCell style={{fontWeight:'bold'}}>Action</TableCell>
             </TableRow>
@@ -302,8 +302,8 @@ const currentData = filteredLeadsData
                     <TableCell>{leads.leads_state}</TableCell>
                     <TableCell>{leads.leads_city}</TableCell>
                     <TableCell>{leads.product_name}</TableCell>
-                    <TableCell>{leads.leads_query}</TableCell>
-                    <TableCell>{leads.remember}</TableCell>
+                    <TableCell>{leads.Call_Discussion}</TableCell>
+                    {/* <TableCell>{leads.remember}</TableCell> */}
                     <TableCell>{moment(leads.reminder_date).format('YYYY-MM-DD')}</TableCell>
 
                     <TableCell>

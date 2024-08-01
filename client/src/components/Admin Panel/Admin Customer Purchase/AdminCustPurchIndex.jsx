@@ -130,7 +130,7 @@ const AdminCustPurchIndex = () => {
               <TableCell style={{ fontWeight: "bold" }}>Quantity</TableCell>
               <TableCell style={{ fontWeight: "bold" }}>Price</TableCell>
               <TableCell style={{ fontWeight: "bold" }}>Payment Type</TableCell>
-              <TableCell style={{ fontWeight: "bold" }}>Advance</TableCell>
+              <TableCell style={{ fontWeight: "bold" }}>payment_amount</TableCell>
               <TableCell style={{ fontWeight: "bold" }}>Balance</TableCell>
               <TableCell style={{ fontWeight: "bold" }}>Total</TableCell>
               <TableCell style={{ fontWeight: "bold" }}>Action</TableCell>
@@ -147,7 +147,7 @@ const AdminCustPurchIndex = () => {
                 <TableCell>{cust_purch.quantity}</TableCell>
                 <TableCell>{cust_purch.price}</TableCell>
                 <TableCell>{cust_purch.payment_type}</TableCell>
-                <TableCell>{cust_purch.advance}</TableCell>
+                <TableCell>{cust_purch.payment_amount}</TableCell>
                 <TableCell>{cust_purch.balance}</TableCell>
                 <TableCell>{cust_purch.total}</TableCell>
                 <TableCell>

@@ -16,7 +16,7 @@ const CardSecondaryAction = ({ title, link, icon }) => {
 
   return (
     <Tooltip title={title || 'Reference'} placement="left">
-      <ButtonBase disableRipple>
+      <ButtonBase >
         {!icon && (
           <Avatar component={Link} href={link} aria-label="redirect pages" target="_blank" alt="MUI Logo" size="badge" outline>
             <svg width="500" height="500" viewBox="0 0 500 500" fill="none" xmlns="http://www.w3.org/2000/svg">

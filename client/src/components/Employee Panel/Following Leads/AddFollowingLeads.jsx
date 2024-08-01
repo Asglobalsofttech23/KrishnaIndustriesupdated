@@ -3,7 +3,7 @@ import axios from 'axios';
 import React, { useState } from 'react';
 import config from '../../../config';
 
-const AddFollowingLeads = ({ onClose,data }) => {
+const AddFollowingLeads = ({ onClose, data }) => {
     const [formData, setFormData] = useState({
         emp_id: sessionStorage.getItem("emp_id"),
         leads_id: data.UNIQUE_QUERY_ID,
@@ -15,13 +15,15 @@ const AddFollowingLeads = ({ onClose,data }) => {
         leads_state: data ? data.SENDER_STATE : "",
         leads_city: data ? data.SENDER_CITY : "",
         product_name: data ? data.QUERY_PRODUCT_NAME : "",
-        leads_query: "",
+        Call_Discussion: "",
+        call_Attended: "", // Initialize this field
         remember: "",
         reminder_date: "",
     });
 
     const [errors, setErrors] = useState({
-        leads_query: "",
+        Call_Discussion: "",
+        call_Attended: "",
         remember: "",
         reminder_date: "",
     });
@@ -29,16 +31,22 @@ const AddFollowingLeads = ({ onClose,data }) => {
     const handleValidation = (name, value) => {
         let errMsg = "";
         const trimmedValue = value && typeof value === 'string' ? value.trim() : value;
+
         switch (name) {
-            case "leads_query":
+            case "Call_Discussion":
+                if (!trimmedValue && formData.call_Attended === 'yes') {
+                    errMsg = "Message is Required";
+                }
+                break;
+            case "call_Attended":
                 if (!trimmedValue) {
-                    errMsg = "Leads Query Message is Required";
+                    errMsg = "Call Attended status is Required";
                 }
                 break;
             case "remember":
-                if (!trimmedValue) {
-                    errMsg = "Please Select one";
-                } else if (trimmedValue === "yes" && !formData.reminder_date) { 
+                if (!trimmedValue && formData.call_Attended === 'yes') {
+                    errMsg = "Please Select whether to remember";
+                } else if (trimmedValue === "yes" && !formData.reminder_date) {
                     errMsg = "Reminder Date is Required";
                 }
                 break;
@@ -47,7 +55,6 @@ const AddFollowingLeads = ({ onClose,data }) => {
         }
         return errMsg;
     };
-    
 
     const handleChangeInput = (e) => {
         const { name, value } = e.target;
@@ -56,31 +63,32 @@ const AddFollowingLeads = ({ onClose,data }) => {
         setErrors({ ...errors, [name]: error });
     };
 
-    const handleSubmit = (e) =>{
-        e.preventDefault()
+    const handleSubmit = (e) => {
+        e.preventDefault();
         let formErrors = {};
 
-        Object.keys(formData).forEach((name)=>{
+        Object.keys(formData).forEach((name) => {
             const value = formData[name];
-            const error = handleValidation(name,value);
-            if(error){
+            const error = handleValidation(name, value);
+            if (error) {
                 formErrors[name] = error;
             }
-        })
+        });
 
-        if(Object.keys(formErrors).length > 0){
+        if (Object.keys(formErrors).length > 0) {
             setErrors(formErrors);
+            return;
         }
 
-        axios.post(`${config.apiUrl}/leads/saveEmpLeads`,formData)
-        .then((res)=>{
-            console.log("Data Added Successfully.",res)
-            onClose()
-        })
-        .catch((err)=>{
-            console.log("Data is not added",err)
-        })
-    }
+        axios.post(`${config.apiUrl}/leads/saveEmpLeads`, formData)
+            .then((res) => {
+                console.log("Data Added Successfully.", res);
+                onClose();
+            })
+            .catch((err) => {
+                console.log("Data is not added", err);
+            });
+    };
 
     return (
         <div>
@@ -88,7 +96,7 @@ const AddFollowingLeads = ({ onClose,data }) => {
             <Grid container spacing={3}>
                 <Grid item xs={6}>
                     <TextField
-                    fullWidth
+                        fullWidth
                         name="leads_name"
                         label="Lead Name"
                         value={formData.leads_name}
@@ -97,7 +105,7 @@ const AddFollowingLeads = ({ onClose,data }) => {
                 </Grid>
                 <Grid item xs={6}>
                     <TextField
-                    fullWidth
+                        fullWidth
                         name="leads_mobile"
                         label="Lead Mobile"
                         value={formData.leads_mobile}
@@ -106,7 +114,7 @@ const AddFollowingLeads = ({ onClose,data }) => {
                 </Grid>
                 <Grid item xs={6}>
                     <TextField
-                    fullWidth
+                        fullWidth
                         name="leads_email"
                         label="Lead Email"
                         value={formData.leads_email}
@@ -115,7 +123,7 @@ const AddFollowingLeads = ({ onClose,data }) => {
                 </Grid>
                 <Grid item xs={6}>
                     <TextField
-                    fullWidth
+                        fullWidth
                         name="leads_company"
                         label="Lead Company"
                         value={formData.leads_company}
@@ -124,7 +132,7 @@ const AddFollowingLeads = ({ onClose,data }) => {
                 </Grid>
                 <Grid item xs={6}>
                     <TextField
-                    fullWidth
+                        fullWidth
                         name="leads_address"
                         label="Lead Address"
                         value={formData.leads_address}
@@ -133,7 +141,7 @@ const AddFollowingLeads = ({ onClose,data }) => {
                 </Grid>
                 <Grid item xs={6}>
                     <TextField
-                    fullWidth
+                        fullWidth
                         name="leads_state"
                         label="Lead State"
                         value={formData.leads_state}
@@ -142,7 +150,7 @@ const AddFollowingLeads = ({ onClose,data }) => {
                 </Grid>
                 <Grid item xs={6}>
                     <TextField
-                    fullWidth
+                        fullWidth
                         name="leads_city"
                         label="Lead City"
                         value={formData.leads_city}
@@ -151,7 +159,7 @@ const AddFollowingLeads = ({ onClose,data }) => {
                 </Grid>
                 <Grid item xs={6}>
                     <TextField
-                    fullWidth
+                        fullWidth
                         name="product_name"
                         label="Product Name"
                         value={formData.product_name}
@@ -160,44 +168,63 @@ const AddFollowingLeads = ({ onClose,data }) => {
                 </Grid>
                 <Grid item xs={6}>
                     <TextField
-                    fullWidth
-                        name="leads_query"
-                        label="Leads Query"
-                        value={formData.leads_query}
-                        onChange={handleChangeInput}
-                        error={!!errors.leads_query}
-                        helperText={errors.leads_query}
-                    />
-                </Grid>
-                <Grid item xs={6}>
-                    <TextField
-                    fullWidth
+                        fullWidth
                         select
-                        name="remember"
-                        label="Remember"
-                        value={formData.remember}
+                        name="call_Attended"
+                        label="IF Call Attended"
+                        value={formData.call_Attended}
                         onChange={handleChangeInput}
-                        error={!!errors.remember}
-                        helperText={errors.remember}
+                        error={!!errors.call_Attended}
+                        helperText={errors.call_Attended}
                     >
                         <MenuItem value="Yes">Yes</MenuItem>
                         <MenuItem value="No">No</MenuItem>
                     </TextField>
                 </Grid>
-                {formData.remember === "Yes" && (
-                    <Grid item xs={6}>
-                        <TextField
-                        fullWidth
-                            name="reminder_date"
-                            label="Reminder Date"
-                            type="date"
-                            value={formData.reminder_date}
-                            onChange={handleChangeInput}
-                            error={!!errors.reminder_date}
-                            helperText={errors.reminder_date}
-                            InputLabelProps={{shrink:true}}
-                        />
-                    </Grid>
+                {formData.call_Attended === "Yes" && (
+                    <>
+                        <Grid item xs={6}>
+                            <TextField
+                                fullWidth
+                                name="Call_Discussion"
+                                label="Call_Discussion"
+                                value={formData.Call_Discussion}
+                                onChange={handleChangeInput}
+                                error={!!errors.Call_Discussion}
+                                helperText={errors.Call_Discussion}
+                            />
+                        </Grid>
+                        <Grid item xs={6}>
+                            <TextField
+                                fullWidth
+                                select
+                                name="remember"
+                                label="Next Remember"
+                                value={formData.remember}
+                                onChange={handleChangeInput}
+                                error={!!errors.remember}
+                                helperText={errors.remember}
+                            >
+                                <MenuItem value="Yes">Yes</MenuItem>
+                                <MenuItem value="No">No</MenuItem>
+                            </TextField>
+                        </Grid>
+                        {formData.remember === "Yes" && (
+                            <Grid item xs={6}>
+                                <TextField
+                                    fullWidth
+                                    name="reminder_date"
+                                    label="Reminder Date"
+                                    type="date"
+                                    value={formData.reminder_date}
+                                    onChange={handleChangeInput}
+                                    error={!!errors.reminder_date}
+                                    helperText={errors.reminder_date}
+                                    InputLabelProps={{ shrink: true }}
+                                />
+                            </Grid>
+                        )}
+                    </>
                 )}
                 <Grid item xs={12} display='flex' justifyContent='center'>
                     <Button onClick={handleSubmit}>Submit</Button>

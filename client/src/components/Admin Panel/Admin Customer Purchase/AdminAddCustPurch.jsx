@@ -14,7 +14,7 @@ const AdminAddCustPurch = ({cust_id,onClose}) => {
         quantity : "",
         price : "",
         payment_type : "",
-        advance : "",
+        payment_amount : "",
         balance : "",
         total : "",
     });
@@ -24,7 +24,7 @@ const AdminAddCustPurch = ({cust_id,onClose}) => {
         quantity : "",
         price : "",
         payment_type : "",
-        advance : "",
+        payment_amount : "",
         balance : "",
         total : "",
     });
@@ -74,9 +74,9 @@ const AdminAddCustPurch = ({cust_id,onClose}) => {
                     errmsg = "Payment type is required."
                 }
                 break;
-            case "advance":
+            case "payment_amount":
                 if(!trimmedValue){
-                    errmsg = "Advance amount is required."
+                    errmsg = "Advance Amount is required."
                 }
                 break;
             case "balance":
@@ -99,12 +99,12 @@ const AdminAddCustPurch = ({cust_id,onClose}) => {
         // Calculate balance amount if payment_type is 'partial'
         if (name === 'payment_type' && value === 'partial') {
             const total = parseFloat(updatedFormData.total || 0);
-            const advance = parseFloat(updatedFormData.advance || 0);
-            updatedFormData.balance = (total - advance).toFixed(2);
-        } else if (name === 'advance') {
+            const payment_amount = parseFloat(updatedFormData.payment_amount || 0);
+            updatedFormData.balance = (total - payment_amount).toFixed(2);
+        } else if (name === 'payment_amount') {
             const total = parseFloat(updatedFormData.total || 0);
-            const advance = parseFloat(value || 0);
-            updatedFormData.balance = (total - advance).toFixed(2);
+            const payment_amount = parseFloat(value || 0);
+            updatedFormData.balance = (total - payment_amount).toFixed(2);
         } else if (name === 'quantity' || name === 'price') {
             const quantity = parseFloat(updatedFormData.quantity || 0);
             const price = parseFloat(updatedFormData.price || 0);
@@ -251,13 +251,13 @@ const AdminAddCustPurch = ({cust_id,onClose}) => {
         <Grid item xs={6}>
             <TextField
             fullWidth
-            name = 'advance'
+            name = 'payment_amount'
             label = 'Amount'
             type='number'
             onChange={handleChangeInput}
-            value={formData.advance}
-            error = {!!errors.advance}
-            helperText = {errors.advance}
+            value={formData.payment_amount}
+            error = {!!errors.payment_amount}
+            helperText = {errors.payment_amount}
             />
         </Grid>
         

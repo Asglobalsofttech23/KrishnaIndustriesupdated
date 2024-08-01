@@ -3,7 +3,7 @@ const app = express();
 const mysql = require('mysql2');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const nodeMailer = require('nodemailer');
+const nodemailer = require('nodemailer');
 const multer = require('multer');
 const path = require('path');
 const port = 3030;
@@ -13,14 +13,38 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-const transporter = nodeMailer.createTransport({
-  host: "smtp-relay.brevo.com",
+const transporter = nodemailer.createTransport({
+  host: "smtp.gmail.com",
   port: 587,
-  secure: false,
+  secure: false, // true for 465, false for other ports
   auth: {
-      user: "7485c5001@smtp-brevo.com", 
-      pass: "98vCAkyzMLfgWYFq" 
-  }
+    user: "ss1725758@gmail.com", // your Gmail account
+    pass: "jssn aehs neyd vkgr", // your Gmail app-specific password or regular password (not recommended)
+  },
+  logger: true, // Enable logging
+  debug: true,  // Enable debug output
+});
+
+app.post('/send-email', (req, res) => {
+  const { to,subject,html} = req.body;
+
+  const mailOptions = {
+    from: 'ss1725758@gmail.com', // Replace with your email address
+    to: to,
+    subject: subject,
+    html: html,
+    
+  };
+
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      console.error('Error sending email:', error);
+      console.error('Error details:', error.message); // Add detailed error logging
+      return res.status(500).json({ error: 'Error sending email', message: error.message });
+    }
+    console.log('Email sent:', info.response);
+    res.status(200).json({ message: 'Email sent' });
+  });
 }); 
 
 
@@ -50,20 +74,20 @@ const upload = multer({ storage: storage });
 const uploadExcel = multer({storage: storageExcel});
 
 
-// const db = mysql.createPool({
-//   host : '193.203.184.74',
-//   port : '3306',
-//   user : 'u534462265_Krishna',
-//   password : 'ASGlobal@12345',
-//   database : 'u534462265_krishna_crm'
-// })
 const db = mysql.createPool({
-  host : 'localhost',
+  host : '193.203.184.74',
   port : '3306',
-  user : 'root',
-  password : '0210',
+  user : 'u534462265_asglobal',
+  password : 'ASGlobal@12345',
   database : 'u534462265_crm'
 })
+// const db = mysql.createPool({
+//   host : 'localhost',
+//   port : '3306',
+//   user : 'root',
+//   password : '0210',
+//   database : 'u534462265_crm'
+// })
 
 db.getConnection((err, connection) => {
   if (err) {

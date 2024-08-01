@@ -6,11 +6,13 @@ module.exports = (db) =>{
 
     router.post('/addCustPurch',(req,res)=>{
         try{
-        const {cust_id,pro_id,quantity,price,payment_type,advance,balance,total} = req.body;
+        const {cust_id,pro_id,quantity,price,payment_type,payment_amount,balance,total,dispatchdate} = req.body;
         console.log("Payment Type :",payment_type)
+        const getdate= req.body
+        console.log(getdate);
         const currentDate = moment().format('YYYY-MM-DD HH:mm:ss');
-        const insertData = `insert into cust_purch_logs(cust_id,pro_id,quantity,price,payment_type,advance,balance,total,created_at) values (?,?,?,?,?,?,?,?,?)`;
-        db.query(insertData,[cust_id,pro_id,quantity,price,payment_type,advance,balance,total,currentDate],(insertErr,insertRes)=>{
+        const insertData = `insert into cust_purch_logs(cust_id,pro_id,quantity,price,payment_type,payment_amount,balance,total,dispatchdate,created_at) values (?,?,?,?,?,?,?,?,?,?)`;
+        db.query(insertData,[cust_id,pro_id,quantity,price,payment_type,payment_amount,balance,total,dispatchdate,currentDate],(insertErr,insertRes)=>{
             if(insertErr){
                 res.status(500).json({message:"Internal server error."})
             }else{
@@ -22,6 +24,38 @@ module.exports = (db) =>{
         }
         
     })
+
+    // In your backend routes file (e.g., custPurchRoutes.js)
+// In your backend routes file (e.g., custPurchRoutes.js)
+router.post('/markAsDelivered/:id', (req, res) => {
+    const { id } = req.params;
+    const currentTime = new Date();
+
+    // Check if the delivery status is already set
+    const checkQuery = 'SELECT deliveryed FROM cust_purch_logs WHERE cust_purch_id = ?';
+    db.query(checkQuery, [id], (err, result) => {
+        if (err) return res.status(500).json({ message: 'Internal server error.' });
+
+        if (result.length === 0) return res.status(404).json({ message: 'Data not found.' });
+
+        if (result[0].deliveryed !== null) {
+            return res.status(400).json({ message: 'Already marked as delivered.' });
+        }
+
+        const updateData = {
+            deliveryed: currentTime,
+            updated_at: currentTime
+        };
+
+        const updateQuery = 'UPDATE cust_purch_logs SET ? WHERE cust_purch_id = ?';
+        db.query(updateQuery, [updateData, id], (err) => {
+            if (err) return res.status(500).json({ message: 'Internal server error.' });
+            res.status(200).json({ message: 'Delivery status updated successfully.' });
+        });
+    });
+});
+
+
 
     router.get('/getCustPurchData',(req,res)=>{
         try{
@@ -67,10 +101,10 @@ module.exports = (db) =>{
     router.put('/updateCustPurch/:cust_purch_id',(req,res)=>{
         try{
             const cust_purch_id = req.params.cust_purch_id;
-            const {cust_id,pro_id,quantity,price,payment_type,advance,balance,total} = req.body; 
+            const {cust_id,pro_id,quantity,price,payment_type,payment_amount,balance,total} = req.body; 
             const currentDate = moment().format('YYYY-MM-DD HH:mm:ss');
-            const updateData = `update cust_purch_logs set cust_id = ?,pro_id = ?,quantity = ?,price = ?,payment_type = ?,advance = ?,balance = ?,total = ?,updated_at = ? where cust_purch_id = ?`;
-            db.query(updateData,[cust_id,pro_id,quantity,price,payment_type,advance,balance,total,currentDate,cust_purch_id],(updateErr,updateRes)=>{
+            const updateData = `update cust_purch_logs set cust_id = ?,pro_id = ?,quantity = ?,price = ?,payment_type = ?,payment_amount = ?,balance = ?,total = ?,updated_at = ? where cust_purch_id = ?`;
+            db.query(updateData,[cust_id,pro_id,quantity,price,payment_type,payment_amount,balance,total,currentDate,cust_purch_id],(updateErr,updateRes)=>{
                 if(updateErr){
                     res.status(500).json({message:"Internal server error."})
                 }else{
@@ -113,7 +147,7 @@ module.exports = (db) =>{
                 SELECT
                     c.cust_name,
                     SUM(cp.total) AS total_amount,
-                    SUM(cp.advance) AS paid_amount,
+                    SUM(cp.payment_amount) AS paid_amount,
                     SUM(cp.balance) AS balance_amount
                 FROM
                     cust_purch_logs cp
@@ -131,7 +165,7 @@ module.exports = (db) =>{
                 SELECT
                     c.cust_name,
                     SUM(cp.total) AS total_amount,
-                    SUM(cp.advance) AS paid_amount,
+                    SUM(cp.payment_amount) AS paid_amount,
                     SUM(cp.balance) AS balance_amount
                 FROM
                     cust_purch_logs cp

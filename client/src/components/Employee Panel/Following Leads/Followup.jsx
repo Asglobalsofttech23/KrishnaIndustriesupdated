@@ -13,13 +13,13 @@ const Followups = ({ onClose,data }) => {
         leads_state: data ? data.leads_state : "",
         leads_city: data ? data.leads_city : "",
         product_name: data ? data.product_name : "",
-        leads_query: data ? data.leads_query :"",
+        Call_Discussion: data ? data.Call_Discussion :"",
         remember: data ? data.remember :"",
         reminder_date: data ? data.reminder_date : "",
     });
 
     const [errors, setErrors] = useState({
-        leads_query: "",
+        Call_Discussion: "",
         remember: "",
         reminder_date: "",
     });
@@ -28,7 +28,7 @@ const Followups = ({ onClose,data }) => {
         let errMsg = "";
         const trimmedValue = value && typeof value === 'string' ? value.trim() : value;
         switch (name) {
-            case "leads_query":
+            case "Call_Discussion":
                 if (!trimmedValue) {
                     errMsg = "Leads Query Message is Required";
                 }
@@ -158,12 +158,12 @@ const Followups = ({ onClose,data }) => {
                 <Grid item xs={6}>
                     <TextField
                     fullWidth
-                        name="leads_query"
+                        name="Call_Discussion"
                         label="Leads Query"
-                        value={updateData.leads_query}
+                        value={updateData.Call_Discussion}
                         onChange={handleChangeInput}
-                        error={!!errors.leads_query}
-                        helperText={errors.leads_query}
+                        error={!!errors.Call_Discussion}
+                        helperText={errors.Call_Discussion}
                     />
                 </Grid>
                 <Grid item xs={6}>

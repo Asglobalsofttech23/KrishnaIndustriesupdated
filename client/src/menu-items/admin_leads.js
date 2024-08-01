@@ -39,6 +39,15 @@ const admin_leads = {
         url: '/AllLeads',
         icon: icons.IconTypography,
         breadcrumbs: false
+      },
+
+      {
+        id: 'admin-notcallleads',
+        title: 'Not Attended Call Leads',
+        type: 'item',
+        url: '/NotAttendedcall',
+        icon: icons.IconTypography,
+        breadcrumbs: false
       }
   ]
 };

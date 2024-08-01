@@ -11,7 +11,7 @@ CREATE TABLE following_leads (
   leads_state VARCHAR(50), 
   leads_city VARCHAR(100), 
   product_name VARCHAR(1000), 
-  leads_query MEDIUMTEXT, 
+  Call_Discussion MEDIUMTEXT, 
   remember VARCHAR(10), 
   reminder_date DATE, 
   created_at DATETIME, 

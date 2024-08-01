@@ -27,7 +27,8 @@ import '@fontsource/poppins/700.css';
 // style + assets
 import 'assets/scss/style.scss';
 import reportWebVitals from 'reportWebVitals';
-
+import { ThemeProvider } from '@mui/material/styles';
+import themeFont from 'themes/font';
 
 // Bootstrap
 
@@ -41,7 +42,10 @@ const store = configureStore({ reducer });
 
 root.render(
   <Provider store={store}>
-    <App />
+     <ThemeProvider theme={themeFont}>
+     <App />
+    </ThemeProvider>
+   
   </Provider>
 );
 

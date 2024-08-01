@@ -31,6 +31,14 @@ const emp_leads = {
         url: '/flwLeadsIndex',
         icon: icons.IconTypography,
         breadcrumbs: false
+      },
+      {
+        id: 'emp-leads',
+        title: 'Not call Attended Leads',
+        type: 'item',
+        url: '/NotAttendedcall',
+        icon: icons.IconTypography,
+        breadcrumbs: false
       }
   ]
 };

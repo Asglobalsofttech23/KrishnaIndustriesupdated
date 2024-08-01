@@ -146,12 +146,15 @@ module.exports = (db) => {
             leads_state,
             leads_city,
             product_name,
-            leads_query,
+            call_Attended,
+            Call_Discussion,
             remember,
-            reminder_date
+            reminder_date,
         } = req.body;
-    
+        const getdata = req.body
+    console.log(getdata)
         const currentDate = moment().format('YYYY-MM-DD HH:mm:ss');
+        const date =moment().format('YYYY-MM-DD');
     
         const saveLeads = `INSERT INTO following_leads
             (
@@ -165,11 +168,13 @@ module.exports = (db) => {
                 leads_state,
                 leads_city,
                 product_name,
-                leads_query,
+                call_Attended,
+                Call_Discussion,
                 remember,
                 reminder_date,
-                created_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+                created_at,
+                date
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?)`;
     
         const params = [
             emp_id ?? null,
@@ -182,10 +187,13 @@ module.exports = (db) => {
             leads_state ?? null,
             leads_city ?? null,
             product_name ?? null,
-            leads_query ?? null,
+            call_Attended ?? null,
+            Call_Discussion ?? null,
             remember ?? null,
             reminder_date || null,
-            currentDate
+            currentDate,
+            date
+
         ];
     
         db.query(saveLeads, params, (err, results) => {
@@ -321,7 +329,7 @@ router.put('/updateFlwLeadForEmp/:id',(req,res)=>{
             leads_state,
             leads_city,
             product_name,
-            leads_query,
+            Call_Discussion,
             remember,
             reminder_date
         } = req.body;
@@ -337,7 +345,7 @@ router.put('/updateFlwLeadForEmp/:id',(req,res)=>{
         leads_state = ?,
         leads_city = ?,
         product_name = ?,
-        leads_query = ?,
+        Call_Discussion = ?,
         remember = ?,
         reminder_date = ?,
         updated_at = ?
@@ -354,7 +362,7 @@ router.put('/updateFlwLeadForEmp/:id',(req,res)=>{
                 leads_state ?? null,
                 leads_city ?? null,
                 product_name ?? null,
-                leads_query ?? null,
+                Call_Discussion ?? null,
                 remember ?? null,
                 reminder_date ?? null,
                 currentDate,
@@ -375,24 +383,61 @@ router.put('/updateFlwLeadForEmp/:id',(req,res)=>{
 
 // =============================================================================
     
-    router.get('/leadsCountForDashboard',(req,res)=>{
+    // router.get('/leadsCountForDashboard',(req,res)=>{
+    //     const currentDate = moment().format("YYYY-MM-DD");
+    //     console.log(currentDate);
+    //     const getData = `
+    //     SELECT COUNT(CASE WHEN reminder_date = '${currentDate}' THEN 1 END) AS reminder_date_count,
+    //     COUNT(CASE WHEN DATE(created_at) = '${currentDate}' THEN 1 END) AS created_at_count FROM 
+    //     following_leads`;
+    //     db.query(getData,(getErr,getRes)=>{
+    //         if(getErr){
+    //             res.status(500).json({message:"Internal server error."})
+    //         }else if(getRes.length === 0){
+    //             res.status(404).json({message:"Data not fount."})
+    //         }
+    //         else{
+    //             res.status(200).json(getRes[0])
+    //         }
+    //     })
+    // })
+    
+    router.get('/leadsCountForDashboard', (req, res) => {
         const currentDate = moment().format("YYYY-MM-DD");
-        console.log(currentDate);
+        // console.log(currentDate);
         const getData = `
-        SELECT COUNT(CASE WHEN reminder_date = '${currentDate}' THEN 1 END) AS reminder_date_count,
-        COUNT(CASE WHEN DATE(created_at) = '${currentDate}' THEN 1 END) AS created_at_count FROM 
-        following_leads`;
-        db.query(getData,(getErr,getRes)=>{
-            if(getErr){
-                res.status(500).json({message:"Internal server error."})
-            }else if(getRes.length === 0){
-                res.status(404).json({message:"Data not fount."})
+            SELECT COUNT(CASE WHEN reminder_date = '${currentDate}' THEN 1 END) AS reminder_date_count,
+                   COUNT(CASE WHEN DATE(created_at) = '${currentDate}' THEN 1 END) AS created_at_count,
+                   GROUP_CONCAT(DISTINCT CONCAT(emp_id, ':', leads_name, ':', leads_mobile) SEPARATOR '; ') AS leads_details
+            FROM following_leads
+            WHERE DATE(created_at) = '${currentDate}'`;
+        db.query(getData, (getErr, getRes) => {
+            if (getErr) {
+                res.status(500).json({ message: "Internal server error." });
+            } else if (getRes.length === 0) {
+                res.status(404).json({ message: "Data not found." });
+            } else {
+                res.status(200).json(getRes[0]);
             }
-            else{
-                res.status(200).json(getRes[0])
+        });
+    });
+    
+
+    // Endpoint to get all employees
+    router.get('/emplyees', (req, res) => {
+        console.log("Fetching employees");
+        const query = 'SELECT emp_id, emp_name FROM employee WHERE is_active = 1'; // Optionally filter by active employees
+    
+        db.query(query, (err, results) => {
+            if (err) {
+                return res.status(500).json({ message: "Internal server error." });
             }
-        })
-    })
+            res.status(200).json(results);
+        });
+    });
+    
+    
+    
     
 // =================================================================================
 
@@ -419,6 +464,42 @@ router.put('/updateFlwLeadForEmp/:id',(req,res)=>{
         });
     });
     
+
+    router.get('/callNotAttended', (req, res) => {
+        console.log("rrrr");
+        const getData = `SELECT * FROM following_leads WHERE call_Attended = 'no'`;
+        db.query(getData, (getErr, getRes) => {
+            if (getErr) {
+                res.status(500).json({ message: "Internal server error." });
+            } else if (getRes.length === 0) {
+                res.status(404).json({ message: "Data not found." });
+            } else {
+                res.status(200).json(getRes); // Return the full array
+            }
+        });
+    });
+    router.get('/callNotAttendedDashBoard', (req, res) => {
+        console.log("Fetching leads where call_Attended = 'no'");
+        const getCountQuery = `SELECT COUNT(*) AS count FROM following_leads WHERE call_Attended = 'no'`;
+        const getDetailsQuery = `SELECT * FROM following_leads WHERE call_Attended = 'no'`;
+    
+        db.query(getCountQuery, (countErr, countRes) => {
+            if (countErr) {
+                res.status(500).json({ message: "Internal server error." });
+            } else {
+                const count = countRes[0].count;
+                db.query(getDetailsQuery, (detailsErr, detailsRes) => {
+                    if (detailsErr) {
+                        res.status(500).json({ message: "Internal server error." });
+                    } else {
+                        res.status(200).json({ count, details: detailsRes });
+                    }
+                });
+            }
+        });
+    });
+    
+
     
     
 

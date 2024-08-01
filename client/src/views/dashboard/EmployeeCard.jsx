@@ -64,7 +64,7 @@ const EmployeeCard = ({ isLoading }) => {
           </Grid>
           <h3 className="emp-value">{empTotal.length}</h3>
         </div>
-        <div>
+        <div className='att'>
           <h2>Today's Attendance</h2>
           <p>Total Attendance Count: {totalCount}</p>
         </div>

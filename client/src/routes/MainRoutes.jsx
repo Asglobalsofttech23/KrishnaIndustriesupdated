@@ -6,6 +6,8 @@ import Loadable from 'ui-component/Loadable';
 import { element } from 'prop-types';
 import AllLeads from 'components/Admin Panel/Leads/AllLeads';
 import StockManagement from 'components/Admin Panel/Stock/Stock Index';
+import NotAttendedcallList from 'components/Admin Panel/Leads/Not Call Attended';
+import EmpCallNotAttendedLeads from 'components/Employee Panel/Employee Leads/Emp Not Call Attended';
 // import UploadExcel from 'components/Admin Panel/Purchase/UploadExell';
 
 const Login = Loadable(lazy(() => import('views/pages/authentication3/Login')));
@@ -77,6 +79,11 @@ const MainRoutes = sessionStorage.getItem("adminLoggedIn") ? {
       path: 'AllLeads',
       element: <AllLeads />
     },
+    {
+      path:'NotAttendedcall',
+      element: <NotAttendedcallList/>
+    },    
+  
     {
       path: 'flwLeadsIndex',
       element: <EmpFollowLeadsIndex />
@@ -158,6 +165,10 @@ const MainRoutes = sessionStorage.getItem("adminLoggedIn") ? {
     {
       path: '/leadsIndex',
       element: <EmpLeadsIndex/>
+    },
+    {
+      path: 'NotAttendedcall',
+      element: <EmpCallNotAttendedLeads/>
     },
     {
       path: '/flwLeadsIndex',

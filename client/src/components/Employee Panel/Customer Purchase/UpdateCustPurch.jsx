@@ -12,7 +12,7 @@ const UpdateCustPurch = ({data,onClose}) => {
         quantity : data ?data.quantity : "",
         price : data ?data.price :"",
         payment_type : data ?data.payment_type :"",
-        advance : data ?data.advance :"",
+        payment_amount : data ?data.payment_amount :"",
         balance :data ?data.balance : "",
         total :data ?data.total : "",
     });
@@ -22,7 +22,7 @@ const UpdateCustPurch = ({data,onClose}) => {
         quantity : "",
         price : "",
         payment_type : "",
-        advance : "",
+        payment_amount : "",
         balance : "",
         total : "",
     });
@@ -72,9 +72,9 @@ const UpdateCustPurch = ({data,onClose}) => {
                     errmsg = "Payment type is required."
                 }
                 break;
-            case "advance":
+            case "payment_amount":
                 if(!trimmedValue){
-                    errmsg = "Advance amount is required."
+                    errmsg = "Advance Amount is required."
                 }
                 break;
             case "balance":
@@ -97,12 +97,12 @@ const UpdateCustPurch = ({data,onClose}) => {
         // Calculate balance amount if payment_type is 'partial'
         if (name === 'payment_type' && value === 'partial') {
             const total = parseFloat(updatedUpdateData.total || 0);
-            const advance = parseFloat(updatedUpdateData.advance || 0);
-            updatedUpdateData.balance = (total - advance).toFixed(2);
-        } else if (name === 'advance') {
+            const payment_amount = parseFloat(updatedUpdateData.payment_amount || 0);
+            updatedUpdateData.balance = (total - payment_amount).toFixed(2);
+        } else if (name === 'payment_amount') {
             const total = parseFloat(updatedUpdateData.total || 0);
-            const advance = parseFloat(value || 0);
-            updatedUpdateData.balance = (total - advance).toFixed(2);
+            const payment_amount = parseFloat(value || 0);
+            updatedUpdateData.balance = (total - payment_amount).toFixed(2);
         } else if (name === 'quantity' || name === 'price') {
             const quantity = parseFloat(updatedUpdateData.quantity || 0);
             const price = parseFloat(updatedUpdateData.price || 0);
@@ -233,13 +233,13 @@ const UpdateCustPurch = ({data,onClose}) => {
         <Grid item xs={6}>
             <TextField
             fullWidth
-            name = 'advance'
+            name = 'payment_amount'
             label = 'Amount'
             type='number'
             onChange={handleChangeInput}
-            value={updateData.advance}
-            error = {!!errors.advance}
-            helperText = {errors.advance}
+            value={updateData.payment_amount}
+            error = {!!errors.payment_amount}
+            helperText = {errors.payment_amount}
             />
         </Grid>
         

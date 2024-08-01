@@ -408,7 +408,7 @@ CREATE TABLE `following_leads` (
   `leads_state` varchar(50) DEFAULT NULL,
   `leads_city` varchar(100) DEFAULT NULL,
   `product_name` varchar(1000) DEFAULT NULL,
-  `leads_query` mediumtext DEFAULT NULL,
+  `Call_Discussion` mediumtext DEFAULT NULL,
   `remember` varchar(10) DEFAULT NULL,
   `reminder_date` date DEFAULT NULL,
   `created_at` datetime DEFAULT NULL,
@@ -419,7 +419,7 @@ CREATE TABLE `following_leads` (
 -- Dumping data for table `following_leads`
 --
 
-INSERT INTO `following_leads` (`follow_id`, `emp_id`, `leads_id`, `leads_name`, `leads_mobile`, `leads_email`, `leads_company`, `leads_address`, `leads_state`, `leads_city`, `product_name`, `leads_query`, `remember`, `reminder_date`, `created_at`, `updated_at`) VALUES
+INSERT INTO `following_leads` (`follow_id`, `emp_id`, `leads_id`, `leads_name`, `leads_mobile`, `leads_email`, `leads_company`, `leads_address`, `leads_state`, `leads_city`, `product_name`, `Call_Discussion`, `remember`, `reminder_date`, `created_at`, `updated_at`) VALUES
 (1, 5, 827546037, 'Prashant Kumar', '+91-9801086112', 'pra55hantkumar@gmail.com', 'IRUWDP', 'Patna, Bihar,         800023', 'Bihar', 'Patna', 'Electric Vegetable Cutter Machine Commercial', 'Test', 'Yes', '2024-05-27', '2024-05-09 14:01:34', NULL),
 (2, 5, 2147483647, 'Ashish', '+91-9881366620', 'gopalashish05@gmail.com', 'luxmi foods', 'Chandigarh, Chandigarh', 'Chandigarh', 'Chandigarh', 'Steel Body Wet Grinder 5 Litre', 'Test', 'Yes', '2024-05-27', '2024-05-09 18:05:56', NULL),
 (3, 5, 2147483647, 'Darshan Patel', '+91-9950680182', '', '', 'Khanapur, Karnataka', 'Karnataka', 'Khanapur', 'Mixture Making Machine, Sevai Machine, Sandhagam Machine, Muruku Machine, Pakkoda Machine', 'Test', 'Yes', '2024-05-27', '2024-05-09 18:06:36', NULL),

@@ -349,6 +349,25 @@ import AddFollowingLeads from "../Following Leads/AddFollowingLeads";
 import ConvertCustomer from "../Customer/ConvertCustomer";
 import config from '../../../config'
 
+
+
+
+const formatDate = (dateStr) => {
+  const date = new Date(dateStr);
+  const day = date.getDate().toString().padStart(2, '0');
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const year = date.getFullYear();
+
+  let hours = date.getHours();
+  const minutes = date.getMinutes().toString().padStart(2, '0');
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+  hours = hours % 12;
+  hours = hours ? hours : 12; // the hour '0' should be '12'
+  const formattedHours = hours.toString().padStart(2, '0');
+
+  return `${day}/${month}/${year} ${formattedHours}:${minutes} ${ampm}`;
+};
+
 const EmpLeadsIndex = () => {
   const yesterday = moment().subtract(1, "days").format("YYYY-MM-DD");
   const today = moment().format("YYYY-MM-DD");
@@ -562,6 +581,7 @@ const EmpLeadsIndex = () => {
           <TableHead>
             <TableRow style={{ fontWeight: "bold", backgroundColor: "#FFF9C4" }}>
               <TableCell style={{ fontWeight: "bold" }}>S.No</TableCell>
+              <TableCell style={{ fontWeight: "bold" }}>date and time</TableCell>
               <TableCell style={{ fontWeight: "bold" }}>Name</TableCell>
               <TableCell style={{ fontWeight: "bold" }}>Mobile Number</TableCell>
               <TableCell style={{ fontWeight: "bold" }}>Email</TableCell>
@@ -577,6 +597,7 @@ const EmpLeadsIndex = () => {
             {currentData.map((leads, index) => (
               <TableRow key={leads.UNIQUE_QUERY_ID}>
                 <TableCell>{index + 1}</TableCell>
+                <TableCell>{formatDate(leads.QUERY_TIME)}</TableCell>
                 <TableCell>{leads.SENDER_NAME}</TableCell>
                 <TableCell>{leads.SENDER_MOBILE}</TableCell>
                 <TableCell>{leads.SENDER_EMAIL}</TableCell>

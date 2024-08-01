@@ -248,8 +248,40 @@ router.get('/api/leads-and-following', async (req, res) => {
 });
 
 
+router.get('/getNotcallattedeByEmpId/:emp_id', (req, res) => {
+  // console.log(req.body);
+  const empId = req.params.emp_id;
+  const query = `
+      SELECT * FROM following_leads
+      WHERE emp_id = ? AND call_Attended = 'No'
+  `;
 
-  
+  db.query(query, [empId], (error, results) => {
+      if (error) {
+          console.error('Error executing query:', error);
+          res.status(500).send('Error fetching data');
+          return;
+      }
+      res.json(results);
+  });
+});
+router.post('/enterLeave', (req, res) => {
+  const { leave_date, reason } = req.body;
+  const query = `INSERT INTO admin_leave (leave_date, reason) VALUES (?, ?)`;
+  db.query(query, [leave_date, reason], (err, result) => {
+      if (err) return res.status(500).send(err);
+      res.status(201).send('Leave entered successfully');
+  });
+});
+
+// Get all admin leave entries (for calendar display)
+router.get('/adminLeave', (req, res) => {
+  const query = `SELECT * FROM admin_leave`;
+  db.query(query, (err, results) => {
+      if (err) return res.status(500).send(err);
+      res.json(results);
+  });
+});
 
   return router;
 }
