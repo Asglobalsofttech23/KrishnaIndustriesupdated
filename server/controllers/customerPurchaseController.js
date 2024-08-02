@@ -287,9 +287,217 @@ router.post('/markAsDelivered/:id', (req, res) => {
         });
     });
     
- 
+    // router.get('/purchaseLogs', (req, res) => {
+    //     try {
+    //         const today = moment().format("YYYY-MM-DD");
     
+    //         // Query to get pending purchases (deliveryed is NULL)
+    //         const pendingPurchasesQuery = `
+    //             SELECT *, 'Pending' AS status 
+    //             FROM cust_purch_logs 
+    //             WHERE deliveryed IS NULL
+    //         `;
     
+    //         // Query to get overdue deliveries (dispatchdate < today and deliveryed is NULL)
+    //         const overdueDeliveriesQuery = `
+    //             SELECT *, 'Overdue' AS status 
+    //             FROM cust_purch_logs 
+    //             WHERE dispatchdate < '${today}' AND deliveryed IS NULL
+    //         `;
+    
+    //         // Query to get delivered purchases (dispatchdate <= today and deliveryed is not NULL)
+    //         const deliveredPurchasesQuery = `
+    //             SELECT *, 'Delivered' AS status 
+    //             FROM cust_purch_logs 
+    //             WHERE dispatchdate <= '${today}' AND deliveryed IS NOT NULL
+    //         `;
+    
+    //         // Execute the queries
+    //         db.query(pendingPurchasesQuery, (err, pendingPurchases) => {
+    //             if (err) return res.status(500).json({ message: "Error fetching pending purchases." });
+    
+    //             db.query(overdueDeliveriesQuery, (err, overdueDeliveries) => {
+    //                 if (err) return res.status(500).json({ message: "Error fetching overdue deliveries." });
+    
+    //                 db.query(deliveredPurchasesQuery, (err, deliveredPurchases) => {
+    //                     if (err) return res.status(500).json({ message: "Error fetching delivered purchases." });
+    
+    //                     // Combine the results
+    //                     const purchases = [
+    //                         ...pendingPurchases,
+    //                         ...overdueDeliveries,
+    //                         ...deliveredPurchases
+    //                     ];
+    
+    //                     res.status(200).json(purchases);
+    //                 });
+    //             });
+    //         });
+    
+    //     } catch (error) {
+    //         console.error("Error fetching purchase logs:", error);
+    //         res.status(500).json({ message: "Internal server error." });
+    //     }
+    // });
+    //   // Define the route
 
-    return router;
+
+// router.get('/purchaseLogs', (req, res) => {
+//     console.log("dsdhisyis");
+//     try {
+//         const today = moment().format("YYYY-MM-DD");
+
+//         // Query to get pending purchases (deliveryed is NULL)
+//         const pendingPurchasesQuery = `
+//             SELECT cust.cust_name, cust.cust_mobile, cust.cust_email, pro.pro_name, cust_purch_logs.*, 'Pending' AS status 
+//             FROM cust_purch_logs 
+//             INNER JOIN customers cust ON cust.cust_id = cust_purch_logs.cust_id
+//             INNER JOIN products pro ON pro.pro_id = cust_purch_logs.pro_id
+//             WHERE cust_purch_logs.deliveryed IS NULL
+//         `;
+
+//         // Query to get overdue deliveries (dispatchdate < today and deliveryed is NULL)
+//         const overdueDeliveriesQuery = `
+//             SELECT cust.cust_name, cust.cust_mobile, cust.cust_email, pro.pro_name, cust_purch_logs.*, 'Overdue' AS status 
+//             FROM cust_purch_logs 
+//             INNER JOIN customers cust ON cust.cust_id = cust_purch_logs.cust_id
+//             INNER JOIN products pro ON pro.pro_id = cust_purch_logs.pro_id
+//             WHERE cust_purch_logs.dispatchdate < '${today}' AND cust_purch_logs.deliveryed IS NULL
+//         `;
+
+//         // Query to get delivered purchases (dispatchdate <= today and deliveryed is not NULL)
+//         const deliveredPurchasesQuery = `
+//             SELECT cust.cust_name, cust.cust_mobile, cust.cust_email, pro.pro_name, cust_purch_logs.*, 'Delivered' AS status 
+//             FROM cust_purch_logs 
+//             INNER JOIN customers cust ON cust.cust_id = cust_purch_logs.cust_id
+//             INNER JOIN products pro ON pro.pro_id = cust_purch_logs.pro_id
+//             WHERE cust_purch_logs.dispatchdate <= '${today}' AND cust_purch_logs.deliveryed IS NOT NULL
+//         `;
+
+//         // Execute the queries
+//         db.query(pendingPurchasesQuery, (err, pendingPurchases) => {
+//             if (err) return res.status(500).json({ message: "Error fetching pending purchases." });
+
+//             db.query(overdueDeliveriesQuery, (err, overdueDeliveries) => {
+//                 if (err) return res.status(500).json({ message: "Error fetching overdue deliveries." });
+
+//                 db.query(deliveredPurchasesQuery, (err, deliveredPurchases) => {
+//                     if (err) return res.status(500).json({ message: "Error fetching delivered purchases." });
+
+//                     // Combine the results
+//                     const purchases = {
+//                         pending: pendingPurchases,
+//                         overdue: overdueDeliveries,
+//                         delivered: deliveredPurchases
+//                     };
+
+//                     res.status(200).json(purchases);
+//                 });
+//             });
+//         });
+
+//     } catch (error) {
+//         console.error("Error fetching purchase logs:", error);
+//         res.status(500).json({ message: "Internal server error." });
+//     }
+// });
+
+// router.get('/purchases/status', (req, res) => {
+//     const query = `
+//     SELECT 
+//       c.cust_id,
+//       c.cust_name,
+//       c.cust_mobile,
+//       c.cust_email,
+//       c.cust_company,
+//       GROUP_CONCAT(DISTINCT p.pro_name SEPARATOR ', ') AS products,
+//       COUNT(l.cust_id) AS purchase_count,
+//       SUM(l.total) AS total_amount,
+//       MAX(CASE
+//         WHEN l.dispatchdate < CURDATE() AND l.deliveryed IS NULL THEN 'Overdue'
+//         ELSE 'Pending'
+//       END) AS status
+//     FROM cust_purch_logs l
+//     JOIN customers c ON l.cust_id = c.cust_id
+//     JOIN products p ON l.pro_id = p.pro_id
+//     WHERE l.deliveryed IS NULL
+//     GROUP BY c.cust_id, c.cust_name, c.cust_mobile, c.cust_email, c.cust_company
+//   `;
+
+//   db.query(query, (error, results) => {
+//     if (error) {
+//       console.error("Error fetching purchase data:", error);
+//       res.status(500).json({ error: error.message });
+//       return;
+//     }
+
+//     const count = results.length;
+//     res.json({ count, details: results });
+//   });
+// });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+router.get('/api/orders', async (req, res) => {
+    try {
+      const [rows] = await db.promise().query(`
+        SELECT 
+          c.cust_name,
+          p.pro_name,
+          cpl.quantity,
+          cpl.price,
+          cpl.payment_type,
+          cpl.payment_amount,
+          cpl.balance,
+          cpl.total,
+          cpl.dispatchdate,
+          cpl.deliveryed,
+          CASE
+            WHEN cpl.deliveryed IS NULL AND cpl.dispatchdate >= CURRENT_DATE THEN 'Pending'
+            WHEN cpl.dispatchdate < CURRENT_DATE AND cpl.deliveryed IS NULL THEN 'Overdue'
+            ELSE 'Delivered'
+          END AS status
+        FROM 
+          cust_purch_logs cpl
+          JOIN customers c ON cpl.cust_id = c.cust_id
+          JOIN products p ON cpl.pro_id = p.pro_id
+        WHERE 
+          cpl.deliveryed IS NULL
+        ORDER BY 
+          cpl.cust_purch_id;
+      `);
+      res.json(rows);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: 'Error fetching orders' });
+    }
+  });
+
+
+
+
+return router;
 }

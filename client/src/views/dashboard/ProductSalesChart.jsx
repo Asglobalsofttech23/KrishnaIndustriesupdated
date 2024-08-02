@@ -147,10 +147,13 @@ const CustPurchChart = ({ isLoading }) => {
 
   return (
     <div>
-      {isLoading ? (
+      {isLoading ? (<>
         <Typography variant="h6">Loading...</Typography>
+        <h3 style={{ textAlign: 'center' ,color: theme.palette.primary.main }}>SALES</h3>
+      </> 
       ) : (
         <MainCard>
+          <h1 style={{ textAlign: 'center' ,color: theme.palette.primary.main }}>SALES</h1>
           <Grid container spacing={3}>
             <Grid item xs={4} display="flex" justifyContent="start">
               <TextField select fullWidth label="select city" value={selectedCity} onChange={(e) => setSelectedCity(e.target.value)}>

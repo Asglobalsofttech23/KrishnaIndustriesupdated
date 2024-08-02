@@ -76,7 +76,7 @@ const AdminAddCustPurch = ({cust_id,onClose}) => {
                 break;
             case "payment_amount":
                 if(!trimmedValue){
-                    errmsg = "Advance Amount is required."
+                    errmsg = "payment_amount Amount is required."
                 }
                 break;
             case "balance":

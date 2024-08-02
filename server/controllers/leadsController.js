@@ -479,26 +479,35 @@ router.put('/updateFlwLeadForEmp/:id',(req,res)=>{
         });
     });
     router.get('/callNotAttendedDashBoard', (req, res) => {
-        console.log("Fetching leads where call_Attended = 'no'");
-        const getCountQuery = `SELECT COUNT(*) AS count FROM following_leads WHERE call_Attended = 'no'`;
-        const getDetailsQuery = `SELECT * FROM following_leads WHERE call_Attended = 'no'`;
-    
+        const currentDate = moment().format("YYYY-MM-DD");
+        // console.log("Fetching leads where call_Attended = 'no' for today");
+      
+        const getCountQuery = `
+          SELECT COUNT(*) AS count 
+          FROM following_leads 
+          WHERE call_Attended = 'no' AND DATE(date) = '${currentDate}'
+        `;
+        const getDetailsQuery = `
+          SELECT * 
+          FROM following_leads 
+          WHERE call_Attended = 'no' AND DATE(date) = '${currentDate}'
+        `;
+      
         db.query(getCountQuery, (countErr, countRes) => {
-            if (countErr) {
+          if (countErr) {
+            res.status(500).json({ message: "Internal server error." });
+          } else {
+            const count = countRes[0].count;
+            db.query(getDetailsQuery, (detailsErr, detailsRes) => {
+              if (detailsErr) {
                 res.status(500).json({ message: "Internal server error." });
-            } else {
-                const count = countRes[0].count;
-                db.query(getDetailsQuery, (detailsErr, detailsRes) => {
-                    if (detailsErr) {
-                        res.status(500).json({ message: "Internal server error." });
-                    } else {
-                        res.status(200).json({ count, details: detailsRes });
-                    }
-                });
-            }
+              } else {
+                res.status(200).json({ count, details: detailsRes });
+              }
+            });
+          }
         });
-    });
-    
+      })
 
     
     

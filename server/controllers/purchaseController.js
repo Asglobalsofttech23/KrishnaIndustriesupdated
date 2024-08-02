@@ -24,10 +24,10 @@ module.exports = (db) => {
     });
   });
   router.post('/savePurchase',(req,res)=>{
-    const {pro_name,specification,purch_address,quantity,price,total,gst,dispatchdate} = req.body;
+    const {pro_name,specification,purch_address,quantity,price,total,gst} = req.body;
     const currentDate = moment().format('YYYY-MM-DD HH:mm:ss');
-    const saveData = 'insert into purchase(pro_name,specification,purch_address,quantity,price,total,gst,dispatchdate,created_at) values(?,?,?,?,?,?,?,?)';
-    db.query(saveData,[pro_name,specification,purch_address,quantity,price,total,gst,dispatchdate,currentDate],(saveErr,saveRes)=>{
+    const saveData = 'insert into purchase(pro_name,specification,purch_address,quantity,price,total,gst,created_at) values(?,?,?,?,?,?,?,?)';
+    db.query(saveData,[pro_name,specification,purch_address,quantity,price,total,gst,currentDate],(saveErr,saveRes)=>{
         if(saveErr){
             res.status(500).json({message:"Internal server error."})
             console.log("Error :",saveErr)
@@ -36,6 +36,7 @@ module.exports = (db) => {
         }
     })
 })
+
 
   // Save purchase data from Excel file
   router.post('/savePurchaseexcel', upload.single('file'), (req, res) => {

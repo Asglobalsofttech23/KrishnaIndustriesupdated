@@ -129,7 +129,9 @@ const TotalProfitChart = ({ isLoading }) => {
         <Typography variant="h6">Loading...</Typography>
       ) : (
         <MainCard>
+          <h1 style={{ textAlign: 'center' ,color: theme.palette.primary.main }}>PROFIT</h1>
           <Grid container spacing={3}>
+
             <Grid item xs={6}>
               <Typography variant="h6">Total Sales: <CurrencyRupeeOutlinedIcon/>{totals.total_sales ? totals.total_sales : '0.00'}</Typography>
             </Grid>
