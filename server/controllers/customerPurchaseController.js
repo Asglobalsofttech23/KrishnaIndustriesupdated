@@ -287,7 +287,7 @@ router.post('/markAsDelivered/:id', (req, res) => {
         });
     });
 
-    router.get('/orders', async (req, res) => {
+    router.get('/api/orders', async (req, res) => {
     try {
       const [rows] = await db.promise().query(`
         SELECT 
