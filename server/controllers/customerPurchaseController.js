@@ -286,6 +286,42 @@ router.post('/markAsDelivered/:id', (req, res) => {
             }
         });
     });
+
+    router.get('/api/orders', async (req, res) => {
+    try {
+      const [rows] = await db.promise().query(`
+        SELECT 
+          c.cust_name,
+          p.pro_name,
+          cpl.quantity,
+          cpl.price,
+          cpl.payment_type,
+          cpl.payment_amount,
+          cpl.balance,
+          cpl.total,
+          cpl.dispatchdate,
+          cpl.deliveryed,
+          CASE
+            WHEN cpl.deliveryed IS NULL AND cpl.dispatchdate >= CURRENT_DATE THEN 'Pending'
+            WHEN cpl.dispatchdate < CURRENT_DATE AND cpl.deliveryed IS NULL THEN 'Overdue'
+            ELSE 'Delivered'
+          END AS status
+        FROM 
+          cust_purch_logs cpl
+          JOIN customers c ON cpl.cust_id = c.cust_id
+          JOIN products p ON cpl.pro_id = p.pro_id
+        WHERE 
+          cpl.deliveryed IS NULL
+        ORDER BY 
+          cpl.cust_purch_id;
+      `);
+      res.json(rows);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: 'Error fetching orders' });
+    }
+  });
+
     
     // router.get('/purchaseLogs', (req, res) => {
     //     try {
@@ -461,40 +497,6 @@ router.post('/markAsDelivered/:id', (req, res) => {
 
 
 
-router.get('/api/orders', async (req, res) => {
-    try {
-      const [rows] = await db.promise().query(`
-        SELECT 
-          c.cust_name,
-          p.pro_name,
-          cpl.quantity,
-          cpl.price,
-          cpl.payment_type,
-          cpl.payment_amount,
-          cpl.balance,
-          cpl.total,
-          cpl.dispatchdate,
-          cpl.deliveryed,
-          CASE
-            WHEN cpl.deliveryed IS NULL AND cpl.dispatchdate >= CURRENT_DATE THEN 'Pending'
-            WHEN cpl.dispatchdate < CURRENT_DATE AND cpl.deliveryed IS NULL THEN 'Overdue'
-            ELSE 'Delivered'
-          END AS status
-        FROM 
-          cust_purch_logs cpl
-          JOIN customers c ON cpl.cust_id = c.cust_id
-          JOIN products p ON cpl.pro_id = p.pro_id
-        WHERE 
-          cpl.deliveryed IS NULL
-        ORDER BY 
-          cpl.cust_purch_id;
-      `);
-      res.json(rows);
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ message: 'Error fetching orders' });
-    }
-  });
 
 
 
